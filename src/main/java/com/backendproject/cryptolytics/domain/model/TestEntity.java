@@ -1,4 +1,4 @@
-package com.backendproject.cryptolytics.model;
+package com.backendproject.cryptolytics.domain.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
