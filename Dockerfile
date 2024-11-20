@@ -14,8 +14,6 @@ FROM eclipse-temurin:21-jammy
 
 WORKDIR /app
 
-#COPY src/main/resources/application.properties /app/application.properties
-
 # Uncomment this for working with local db
 #ENV SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/crypto_database
 #ENV SPRING_DATASOURCE_USERNAME=db_admin
