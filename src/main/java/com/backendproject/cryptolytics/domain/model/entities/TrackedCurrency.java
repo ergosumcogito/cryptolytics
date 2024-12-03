@@ -11,9 +11,22 @@ public class TrackedCurrency {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String symbol;
     private String name;
 
     public String getName() {
         return name;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
