@@ -11,7 +11,7 @@ public class UserInput {
     private String indicatorName;
     private String currenciesNames;
 
-    @OneToOne(mappedBy = "id")
+    @OneToOne(mappedBy = "userInput")
     private Query query;
 
     public UserInput() {}
