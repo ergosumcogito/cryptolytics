@@ -13,6 +13,10 @@ public class CurrencyController {
     @Autowired
     private CurrencyRepository currencyRepository;
 
+    public CurrencyController(CurrencyRepository currencyRepository) {
+        this.currencyRepository = currencyRepository;
+    }
+
     // GET endpoint to fetch all currencies
     @GetMapping
     public List<TrackedCurrency> getAllCurrencies() {
