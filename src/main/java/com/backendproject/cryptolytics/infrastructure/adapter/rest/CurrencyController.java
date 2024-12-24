@@ -1,7 +1,7 @@
 package com.backendproject.cryptolytics.infrastructure.adapter.rest;
 
 import com.backendproject.cryptolytics.domain.model.entities.TrackedCurrency;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyRepository;
+import com.backendproject.cryptolytics.infrastructure.adapter.persistence.TrackedCurrencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +11,9 @@ import java.util.List;
 @RequestMapping("/api/currencies")
 public class CurrencyController {
     @Autowired
-    private CurrencyRepository currencyRepository;
+    private TrackedCurrencyRepository currencyRepository;
 
-    public CurrencyController(CurrencyRepository currencyRepository) {
+    public CurrencyController(TrackedCurrencyRepository currencyRepository) {
         this.currencyRepository = currencyRepository;
     }
 
