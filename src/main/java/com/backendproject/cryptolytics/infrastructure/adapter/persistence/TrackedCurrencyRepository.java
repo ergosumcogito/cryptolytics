@@ -5,11 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
-// Mark this as a Spring Repository
 @Repository
-public interface CurrencyRepository extends JpaRepository<TrackedCurrency, Long> {
-
-    // Optional custom query methods, e.g., finding by symbol
+public interface TrackedCurrencyRepository extends JpaRepository<TrackedCurrency, Long> {
     Optional<TrackedCurrency> findBySymbol(String symbol);
 }
 
