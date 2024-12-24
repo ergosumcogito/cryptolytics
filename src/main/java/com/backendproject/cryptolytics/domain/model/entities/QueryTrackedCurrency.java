@@ -3,7 +3,7 @@ package com.backendproject.cryptolytics.domain.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class QueryTrackedCurrencies {
+public class QueryTrackedCurrency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,7 +16,7 @@ public class QueryTrackedCurrencies {
     @JoinColumn(name = "currency_id", nullable = false)
     private TrackedCurrency trackedCurrency;
 
-    public QueryTrackedCurrencies() {}
+    public QueryTrackedCurrency() {}
 
     public Long getId() {
         return id;

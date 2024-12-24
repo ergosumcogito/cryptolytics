@@ -13,8 +13,6 @@ public class Indicator {
     private String name;
     private String description;
 
-    public Indicator() {}
-
     public String getName() {
         return name;
     }

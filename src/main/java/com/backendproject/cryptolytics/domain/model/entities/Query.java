@@ -2,6 +2,7 @@ package com.backendproject.cryptolytics.domain.model.entities;
 
 import jakarta.persistence.*;
 
+import javax.sound.midi.Track;
 import java.util.List;
 
 @Entity
@@ -10,15 +11,11 @@ public class Query {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "userInput_id", nullable = false)
-    private UserInput userInput;
+    private Long userInputId;
 
-    @ElementCollection
-    private List<String> queryCurrencies;
-
-    @OneToMany(mappedBy = "query")
-    private List<QueryTrackedCurrencies> queryTrackedCurrencies;
+    @ManyToOne
+    @JoinColumn(name = "query_currencies_id")
+    private TrackedCurrency currency;
 
     @ManyToOne
     @JoinColumn(name = "indicator_id", nullable = false)
@@ -30,16 +27,12 @@ public class Query {
         return id;
     }
 
-    public UserInput getUserInput() {
-        return userInput;
+    public Long getUserInputId() {
+        return userInputId;
     }
 
-    public List<String> getQueryCurrencies() {
-        return queryCurrencies;
-    }
-
-    public List<QueryTrackedCurrencies> getTrackedCurrencies() {
-        return queryTrackedCurrencies;
+    public TrackedCurrency getCurrency() {
+        return currency;
     }
 
     public Indicator getIndicator() {

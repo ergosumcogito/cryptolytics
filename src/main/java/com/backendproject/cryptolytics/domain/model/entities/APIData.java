@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-public class ApiData {
+public class APIData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,9 +18,7 @@ public class ApiData {
     private LocalDateTime createdAt;
     private BigDecimal value;
 
-    public ApiData() {}
-
-    public IndicatorTrackedCurrency getIndicatorCurrency() {
+    public IndicatorTrackedCurrency getIndicatorTrackedCurrency() {
         return indicatorCurrency;
     }
 

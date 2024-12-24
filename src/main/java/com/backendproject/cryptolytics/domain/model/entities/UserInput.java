@@ -11,9 +11,6 @@ public class UserInput {
     private String indicatorName;
     private String currenciesNames;
 
-    @OneToOne(mappedBy = "userInput")
-    private Query query;
-
     public UserInput() {}
 
     public UserInput(String indicatorName, String currenciesNames) {
@@ -31,9 +28,5 @@ public class UserInput {
 
     public String getCurrenciesNames() {
         return currenciesNames;
-    }
-
-    public Query getQuery() {
-        return query;
     }
 }

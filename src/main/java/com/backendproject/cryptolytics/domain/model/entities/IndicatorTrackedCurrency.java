@@ -16,13 +16,11 @@ public class IndicatorTrackedCurrency {
     @JoinColumn(name = "currency_id", nullable = false)
     private TrackedCurrency trackedCurrency;
 
-    public IndicatorTrackedCurrency() {}
-
     public Indicator getIndicator() {
         return indicator;
     }
 
-    public TrackedCurrency getCurrency() {
+    public TrackedCurrency getTrackedCurrency() {
         return trackedCurrency;
     }
 }
