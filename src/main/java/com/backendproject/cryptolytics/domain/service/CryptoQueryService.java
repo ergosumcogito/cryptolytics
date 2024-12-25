@@ -7,6 +7,7 @@ import com.backendproject.cryptolytics.domain.model.entities.Query;
 import com.backendproject.cryptolytics.infrastructure.adapter.persistence.APIDataRepository;
 import com.backendproject.cryptolytics.infrastructure.adapter.persistence.IndicatorTrackedCurrencyRepository;
 import com.backendproject.cryptolytics.infrastructure.adapter.persistence.QueryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class CryptoQueryService {
 
     public BigDecimal getIndicatorValue(Long queryId) {
         Query query = queryRepository.findById(queryId)
-                .orElseThrow(() -> new RuntimeException("Query not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Query with id" + queryId + " not found"));
 
         // Fetch IndicatorTrackedCurrency (joining indicator and currency)
         IndicatorTrackedCurrency indicatorTrackedCurrency = indicatorTrackedCurrencyRepository

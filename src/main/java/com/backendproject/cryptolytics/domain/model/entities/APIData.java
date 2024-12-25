@@ -13,17 +13,17 @@ public class APIData {
 
     @ManyToOne
     @JoinColumn(name = "indicator_currency_id", nullable = false)
-    private IndicatorTrackedCurrency indicatorCurrency;
+    private IndicatorTrackedCurrency indicatorTrackedCurrency;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime timestamp;
     private BigDecimal value;
 
     public IndicatorTrackedCurrency getIndicatorTrackedCurrency() {
-        return indicatorCurrency;
+        return indicatorTrackedCurrency;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
     public BigDecimal getValue() {
