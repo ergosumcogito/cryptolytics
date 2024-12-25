@@ -1,10 +1,12 @@
-CREATE TABLE TrackedCurrency
+-- Create table for currencies
+CREATE TABLE Currency
 (
     id     SERIAL PRIMARY KEY,
     symbol VARCHAR(10) NOT NULL UNIQUE,
     name   VARCHAR(50) NOT NULL
 );
 
+-- Create table for indicators
 CREATE TABLE Indicator
 (
     id          SERIAL PRIMARY KEY,
@@ -12,80 +14,50 @@ CREATE TABLE Indicator
     description TEXT
 );
 
-CREATE TABLE UserInput
+-- Create table for CurrencyIndicator (linking currency and indicator)
+CREATE TABLE Currency_Indicator
 (
-    id               SERIAL PRIMARY KEY,
-    indicator_name   VARCHAR(50) NOT NULL,
-    currencies_names TEXT        NOT NULL
-);
-
-CREATE TABLE Query
-(
-    id                  SERIAL PRIMARY KEY,
-    user_id             INTEGER NOT NULL,
-    indicator_id        INTEGER NOT NULL,
-    query_currencies_id INTEGER,
+    id           SERIAL PRIMARY KEY,
+    currency_id  INTEGER NOT NULL,
+    indicator_id INTEGER NOT NULL,
+    FOREIGN KEY (currency_id) REFERENCES Currency (id),
     FOREIGN KEY (indicator_id) REFERENCES Indicator (id)
 );
 
-CREATE TABLE QueryTrackedCurrency
-(
-    id          SERIAL PRIMARY KEY,
-    query_id    INTEGER NOT NULL,
-    currency_id INTEGER NOT NULL,
-    FOREIGN KEY (query_id) REFERENCES Query (id),
-    FOREIGN KEY (currency_id) REFERENCES TrackedCurrency (id)
-);
-
-CREATE TABLE IndicatorTrackedCurrency
-(
-    id           SERIAL PRIMARY KEY,
-    indicator_id INTEGER NOT NULL,
-    currency_id  INTEGER NOT NULL,
-    FOREIGN KEY (indicator_id) REFERENCES Indicator (id),
-    FOREIGN KEY (currency_id) REFERENCES TrackedCurrency (id)
-);
-
-CREATE TABLE APIData
+-- Create table for storing the values of indicators for specific currency at a specific time
+CREATE TABLE Currency_Indicator_Value
 (
     id                    SERIAL PRIMARY KEY,
-    indicator_currency_id INTEGER        NOT NULL,
-    timestamp             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    currency_indicator_id INTEGER        NOT NULL,
     value                 NUMERIC(15, 2) NOT NULL,
-    FOREIGN KEY (indicator_currency_id) REFERENCES IndicatorTrackedCurrency (id)
+    timestamp             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (currency_indicator_id) REFERENCES Currency_Indicator (id)
 );
 
-
-INSERT INTO TrackedCurrency (symbol, name)
+-- Insert test data into currencies
+INSERT INTO Currency (symbol, name)
 VALUES ('BTC', 'Bitcoin'),
        ('ETH', 'Ethereum'),
        ('USDT', 'Tether');
 
+-- Insert test data into indicators
 INSERT INTO Indicator (name, description)
 VALUES ('Price', 'Current price of the currency'),
        ('Volume', '24-hour trading volume');
 
-INSERT INTO UserInput (indicator_name, currencies_names)
-VALUES ('Price', 'BTC,ETH'),
-       ('Volume', 'BTC,USDT');
+-- Insert test data into CurrencyIndicators (mapping currency and indicator)
+INSERT INTO Currency_Indicator (currency_id, indicator_id)
+VALUES (1, 1), -- BTC - Price
+       (2, 1), -- ETH - Price
+       (1, 2), -- BTC - Volume
+       (2, 2), -- ETH - Volume
+       (3, 1);
+-- USDT - Price
 
-INSERT INTO Query (user_id, indicator_id, query_currencies_id)
-VALUES (1, 1, 1),
-       (2, 2, 1);
-
-INSERT INTO QueryTrackedCurrency (query_id, currency_id)
-VALUES (1, 1),
-       (1, 2),
-       (2, 1),
-       (2, 3);
-
-INSERT INTO IndicatorTrackedCurrency (indicator_id, currency_id)
-VALUES (1, 1),
-       (1, 2),
-       (2, 1),
-       (2, 3);
-
-INSERT INTO APIData (indicator_currency_id, value)
-VALUES (1, 38500.75),
-       (2, 1800.25),
-       (3, 100000000);
+-- Insert test data into CurrencyIndicatorValues
+INSERT INTO Currency_Indicator_Value (currency_indicator_id, value)
+VALUES (1, 38500.75),  -- BTC - Price
+       (2, 2800.45),   -- ETH - Price
+       (3, 100000000), -- BTC - Volume
+       (4, 1500000),   -- ETH - Volume
+       (5, 1); -- USDT - Price
