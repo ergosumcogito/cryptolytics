@@ -1,48 +1,57 @@
 package com.backendproject.cryptolytics.domain.service;
 
-
-import com.backendproject.cryptolytics.domain.model.entities.APIData;
-import com.backendproject.cryptolytics.domain.model.entities.IndicatorTrackedCurrency;
-import com.backendproject.cryptolytics.domain.model.entities.Query;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.APIDataRepository;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.IndicatorTrackedCurrencyRepository;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.QueryRepository;
+import com.backendproject.cryptolytics.domain.model.entities.Currency;
+import com.backendproject.cryptolytics.domain.model.entities.CurrencyIndicator;
+import com.backendproject.cryptolytics.domain.model.entities.CurrencyIndicatorValue;
+import com.backendproject.cryptolytics.domain.model.entities.Indicator;
+import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyIndicatorRepository;
+import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyIndicatorValueRepository;
+import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyRepository;
+import com.backendproject.cryptolytics.infrastructure.adapter.persistence.IndicatorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 public class CryptoQueryService {
 
-    private final QueryRepository queryRepository;
-    private final IndicatorTrackedCurrencyRepository indicatorTrackedCurrencyRepository;
-    private final APIDataRepository apiDataRepository;
+    private final CurrencyRepository currencyRepository;
+    private final IndicatorRepository indicatorRepository;
+    private final CurrencyIndicatorRepository currencyIndicatorRepository;
+    private final CurrencyIndicatorValueRepository currencyIndicatorValueRepository;
 
     @Autowired
-    public CryptoQueryService(QueryRepository queryRepository,
-                              IndicatorTrackedCurrencyRepository indicatorTrackedCurrencyRepository,
-                              APIDataRepository apiDataRepository) {
-        this.queryRepository = queryRepository;
-        this.indicatorTrackedCurrencyRepository = indicatorTrackedCurrencyRepository;
-        this.apiDataRepository = apiDataRepository;
+    public CryptoQueryService(CurrencyRepository currencyRepository,
+                              IndicatorRepository indicatorRepository,
+                              CurrencyIndicatorRepository currencyIndicatorRepository,
+                              CurrencyIndicatorValueRepository currencyIndicatorValueRepository) {
+        this.currencyRepository = currencyRepository;
+        this.indicatorRepository = indicatorRepository;
+        this.currencyIndicatorRepository = currencyIndicatorRepository;
+        this.currencyIndicatorValueRepository = currencyIndicatorValueRepository;
     }
 
-    public BigDecimal getIndicatorValue(Long queryId) {
-        Query query = queryRepository.findById(queryId)
-                .orElseThrow(() -> new EntityNotFoundException("Query with id" + queryId + " not found"));
+    public BigDecimal getPriceForCurrency(String currencySymbol) {
+        // Get currency entity by symbol
+        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
 
-        // Fetch IndicatorTrackedCurrency (joining indicator and currency)
-        IndicatorTrackedCurrency indicatorTrackedCurrency = indicatorTrackedCurrencyRepository
-                .findByIndicatorAndTrackedCurrency(query.getIndicator(), query.getCurrency())
-                .orElseThrow(() -> new RuntimeException("Indicator-Currency pair not found"));
+        // Get "Price" indicator
+        Indicator priceIndicator = indicatorRepository.findByName("Price")
+                .orElseThrow(() -> new EntityNotFoundException("Indicator 'Price' not found"));
 
-        // Fetch APIData for the specific indicator and currency
-        APIData apiData = apiDataRepository.findByIndicatorTrackedCurrencyAndTimestamp(indicatorTrackedCurrency, LocalDateTime.now())
-                .orElseThrow(() -> new RuntimeException("API data not found"));
+        // Find the CurrencyIndicator (currency + price indicator)
+        CurrencyIndicator currencyIndicator = currencyIndicatorRepository
+                .findByCurrencyAndIndicator(currency, priceIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
 
-        return apiData.getValue();
+        // Get the most recent value for this CurrencyIndicator
+        CurrencyIndicatorValue value = currencyIndicatorValueRepository
+                .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Price data not found"));
+
+        return value.getValue();  // Return the most recent price value
     }
 }

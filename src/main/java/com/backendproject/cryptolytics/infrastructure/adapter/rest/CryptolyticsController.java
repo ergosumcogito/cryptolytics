@@ -1,6 +1,5 @@
 package com.backendproject.cryptolytics.infrastructure.adapter.rest;
 
-
 import com.backendproject.cryptolytics.domain.service.CryptoQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,10 @@ public class CryptolyticsController {
         this.cryptoQueryService = cryptoQueryService;
     }
 
-    @GetMapping("/indicator")
-    public ResponseEntity<BigDecimal> getIndicatorValue(@RequestParam Long queryId) {
-        BigDecimal value = cryptoQueryService.getIndicatorValue(queryId);
-        return ResponseEntity.ok(value);
+    @GetMapping("/price")
+    public ResponseEntity<BigDecimal> getPrice(@RequestParam String currency) {
+        BigDecimal price = cryptoQueryService.getPriceForCurrency(currency);
+        return ResponseEntity.ok(price);
     }
 }
+
