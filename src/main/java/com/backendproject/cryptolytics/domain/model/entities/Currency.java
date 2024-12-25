@@ -10,13 +10,13 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Indicator {
+public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String symbol;
     private String name;
-    private String description;
 
-    // Getters and setters
+   // Getters and setters
 }

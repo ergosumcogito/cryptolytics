@@ -1,22 +1,22 @@
 package com.backendproject.cryptolytics.domain.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-public class Indicator {
+public class CurrencyIndicator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String description;
+    @ManyToOne
+    private Currency currency;
+
+    @ManyToOne
+    private Indicator indicator;
 
     // Getters and setters
 }
