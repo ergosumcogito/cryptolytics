@@ -60,13 +60,28 @@ public class CryptoQueryService {
     }
 
     public Object getIndicatorForCurrency(String currency, IndicatorType indicatorType) {
-        switch (indicatorType) {
-            case PRICE:
-                return getPriceForCurrency(currency);
-            //case "volume":
-              //  return getVolumeForCurrency(currency);
-            default:
-                throw new IllegalArgumentException("Invalid indicator: " + indicatorType);
-        }
+        return switch (indicatorType) {
+            case PRICE -> getPriceForCurrency(currency);
+            case VOLUME -> getVolumeForCurrency(currency);
+            default -> throw new IllegalArgumentException("Invalid indicator: " + indicatorType);
+        };
+    }
+
+    public BigDecimal getVolumeForCurrency(String currencySymbol) {
+        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+
+        Indicator volumeIndicator = indicatorRepository.findByName("Volume")
+                .orElseThrow(() -> new EntityNotFoundException("Indicator 'Volume' not found"));
+
+        CurrencyIndicator currencyIndicator = currencyIndicatorRepository
+                .findByCurrencyAndIndicator(currency, volumeIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
+
+        CurrencyIndicatorValue value = currencyIndicatorValueRepository
+                .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Volume data not found"));
+
+        return value.getValue();
     }
 }
