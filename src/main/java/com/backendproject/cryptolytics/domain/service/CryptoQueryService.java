@@ -22,6 +22,10 @@ public class CryptoQueryService {
     private final CurrencyIndicatorRepository currencyIndicatorRepository;
     private final CurrencyIndicatorValueRepository currencyIndicatorValueRepository;
 
+    public enum IndicatorType {
+        PRICE, VOLUME
+    }
+
     @Autowired
     public CryptoQueryService(CurrencyRepository currencyRepository,
                               IndicatorRepository indicatorRepository,
@@ -52,6 +56,17 @@ public class CryptoQueryService {
                 .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
                 .orElseThrow(() -> new EntityNotFoundException("Price data not found"));
 
-        return value.getValue();  // Return the most recent price value
+        return value.getValue();
+    }
+
+    public Object getIndicatorForCurrency(String currency, IndicatorType indicatorType) {
+        switch (indicatorType) {
+            case PRICE:
+                return getPriceForCurrency(currency);
+            //case "volume":
+              //  return getVolumeForCurrency(currency);
+            default:
+                throw new IllegalArgumentException("Invalid indicator: " + indicatorType);
+        }
     }
 }
