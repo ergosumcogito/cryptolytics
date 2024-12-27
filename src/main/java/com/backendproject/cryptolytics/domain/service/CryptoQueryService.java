@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class CryptoQueryService {
@@ -21,6 +22,10 @@ public class CryptoQueryService {
     private final IndicatorRepository indicatorRepository;
     private final CurrencyIndicatorRepository currencyIndicatorRepository;
     private final CurrencyIndicatorValueRepository currencyIndicatorValueRepository;
+
+    public enum IndicatorType {
+        PRICE, VOLUME
+    }
 
     @Autowired
     public CryptoQueryService(CurrencyRepository currencyRepository,
@@ -52,6 +57,36 @@ public class CryptoQueryService {
                 .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
                 .orElseThrow(() -> new EntityNotFoundException("Price data not found"));
 
-        return value.getValue();  // Return the most recent price value
+        return value.getValue();
+    }
+
+    public Object getIndicatorForCurrency(String currency, IndicatorType indicatorType) {
+        return switch (indicatorType) {
+            case PRICE -> getPriceForCurrency(currency);
+            case VOLUME -> getVolumeForCurrency(currency);
+            default -> throw new IllegalArgumentException("Invalid indicator: " + indicatorType);
+        };
+    }
+
+    public BigDecimal getVolumeForCurrency(String currencySymbol) {
+        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+
+        Indicator volumeIndicator = indicatorRepository.findByName("Volume")
+                .orElseThrow(() -> new EntityNotFoundException("Indicator 'Volume' not found"));
+
+        CurrencyIndicator currencyIndicator = currencyIndicatorRepository
+                .findByCurrencyAndIndicator(currency, volumeIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
+
+        CurrencyIndicatorValue value = currencyIndicatorValueRepository
+                .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
+                .orElseThrow(() -> new EntityNotFoundException("Volume data not found"));
+
+        return value.getValue();
+    }
+
+    public List<Currency> getAllCurrencies(){
+        return currencyRepository.findAll();
     }
 }
