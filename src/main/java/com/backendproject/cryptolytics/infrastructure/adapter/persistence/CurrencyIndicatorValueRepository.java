@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface CurrencyIndicatorValueRepository extends JpaRepository<CurrencyIndicatorValue, Long> {
     List<CurrencyIndicatorValue> findByCurrencyIndicator(CurrencyIndicator currencyIndicator);
     Optional<CurrencyIndicatorValue> findTopByCurrencyIndicatorOrderByTimestampDesc(CurrencyIndicator currencyIndicator);
+    CurrencyIndicatorValue findFirstByOrderByTimestampAsc();
 }

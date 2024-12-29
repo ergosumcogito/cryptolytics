@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -88,5 +90,11 @@ public class CryptoQueryService {
 
     public List<Currency> getAllCurrencies(){
         return currencyRepository.findAll();
+    }
+
+    public String getFormattedOldestUpdateTimestamp(){
+        LocalDateTime oldestTimestamp = currencyIndicatorValueRepository.findFirstByOrderByTimestampAsc().getTimestamp();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM");
+        return oldestTimestamp.format(formatter);
     }
 }

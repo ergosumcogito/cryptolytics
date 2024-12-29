@@ -51,13 +51,19 @@ public class CryptolyticsController {
         return ResponseEntity.ok(currencyDTOs);
     }
 
+    @GetMapping("/last-updated")
+        public ResponseEntity<String> getOldestUpdated(){
+            String formattedTimestamp = cryptoQueryService.getFormattedOldestUpdateTimestamp();
+            return ResponseEntity.ok(formattedTimestamp);
+        }
+
+
   //  @GetMapping("/market_cap")
 
   //  @GetMapping("/market_cap_rank")
 
  //   @GetMapping("/high_24h")
 
- // @GetMapping("/last_updated")
 
  //   @GetMapping("/all_data")
  //   @GetMapping("/chart")
