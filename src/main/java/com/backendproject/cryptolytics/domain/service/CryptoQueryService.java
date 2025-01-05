@@ -1,13 +1,13 @@
 package com.backendproject.cryptolytics.domain.service;
 
-import com.backendproject.cryptolytics.domain.model.entities.Currency;
-import com.backendproject.cryptolytics.domain.model.entities.CurrencyIndicator;
-import com.backendproject.cryptolytics.domain.model.entities.CurrencyIndicatorValue;
-import com.backendproject.cryptolytics.domain.model.entities.Indicator;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyIndicatorRepository;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyIndicatorValueRepository;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.CurrencyRepository;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.IndicatorRepository;
+import com.backendproject.cryptolytics.persistence.entity.Currency;
+import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicator;
+import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicatorValue;
+import com.backendproject.cryptolytics.persistence.entity.Indicator;
+import com.backendproject.cryptolytics.persistence.repository.CurrencyIndicatorRepository;
+import com.backendproject.cryptolytics.persistence.repository.CurrencyIndicatorValueRepository;
+import com.backendproject.cryptolytics.persistence.repository.CurrencyRepository;
+import com.backendproject.cryptolytics.persistence.repository.IndicatorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

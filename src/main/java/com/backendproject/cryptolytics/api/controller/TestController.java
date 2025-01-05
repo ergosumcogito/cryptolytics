@@ -1,7 +1,7 @@
-package com.backendproject.cryptolytics.infrastructure.adapter.rest;
+package com.backendproject.cryptolytics.api.controller;
 
-import com.backendproject.cryptolytics.domain.model.entities.TestEntity;
-import com.backendproject.cryptolytics.infrastructure.adapter.persistence.TestRepository;
+import com.backendproject.cryptolytics.persistence.entity.TestEntity;
+import com.backendproject.cryptolytics.persistence.repository.TestRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
