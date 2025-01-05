@@ -1,6 +1,7 @@
 package com.backendproject.cryptolytics.api.controller;
 
 import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
+import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.domain.service.CryptoQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,14 @@ public class CryptolyticsController {
                 .map(currency -> new CurrencyDTO(currency.getSymbol(), currency.getName()))
                 .toList();
         return ResponseEntity.ok(currencyDTOs);
+    }
+
+    @GetMapping("/indicators")
+    public ResponseEntity<List<IndicatorDTO>> getIndicatorsList(){
+        List<IndicatorDTO> indicatorDTOs = cryptoQueryService.getAllIndicators().stream()
+                .map(indicator -> new IndicatorDTO(indicator.getName(), indicator.getDescription()))
+                .toList();
+        return ResponseEntity.ok(indicatorDTOs);
     }
 
     @GetMapping("/last-updated")

@@ -92,6 +92,10 @@ public class CryptoQueryService {
         return currencyRepository.findAll();
     }
 
+    public List<Indicator> getAllIndicators(){
+        return indicatorRepository.findAll();
+    }
+
     public String getFormattedOldestUpdateTimestamp(){
         LocalDateTime oldestTimestamp = currencyIndicatorValueRepository.findFirstByOrderByTimestampAsc().getTimestamp();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM");
