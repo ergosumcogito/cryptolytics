@@ -5,12 +5,8 @@ import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.domain.service.CryptoQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -24,16 +20,10 @@ public class CryptolyticsController {
         this.cryptoQueryService = cryptoQueryService;
     }
 
-    @GetMapping("/price")
-    public ResponseEntity<BigDecimal> getPrice(@RequestParam String currency) {
-        BigDecimal price = cryptoQueryService.getPriceForCurrency(currency);
-        return ResponseEntity.ok(price);
-    }
-
-    @GetMapping("/indicator")
+    @GetMapping("/currencies/{currency}/data/{indicator}")
     public ResponseEntity<Object> getIndicatorForCurrency(
-            @RequestParam String currency,
-            @RequestParam String indicator) {
+            @PathVariable String currency,
+            @PathVariable String indicator) {
         try{
             CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.valueOf(indicator.toUpperCase());
             Object result  = cryptoQueryService.getIndicatorForCurrency(currency, indicatorType);
@@ -65,7 +55,6 @@ public class CryptolyticsController {
             String formattedTimestamp = cryptoQueryService.getFormattedOldestUpdateTimestamp();
             return ResponseEntity.ok(formattedTimestamp);
         }
-
 
   //  @GetMapping("/market_cap")
 
