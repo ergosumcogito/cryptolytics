@@ -1,4 +1,4 @@
-package com.backendproject.cryptolytics.application.dto;
+package com.backendproject.cryptolytics.api.dto;
 
 public class CurrencyDTO {
     private String symbol;

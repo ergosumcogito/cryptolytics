@@ -1,6 +1,6 @@
-package com.backendproject.cryptolytics.infrastructure.adapter.persistence;
+package com.backendproject.cryptolytics.persistence.repository;
 
-import com.backendproject.cryptolytics.domain.model.entities.Indicator;
+import com.backendproject.cryptolytics.persistence.entity.Indicator;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

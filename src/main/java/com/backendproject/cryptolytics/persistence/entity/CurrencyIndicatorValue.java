@@ -1,4 +1,4 @@
-package com.backendproject.cryptolytics.domain.model.entities;
+package com.backendproject.cryptolytics.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
