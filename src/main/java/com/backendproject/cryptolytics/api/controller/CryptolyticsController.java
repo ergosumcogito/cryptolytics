@@ -56,16 +56,7 @@ public class CryptolyticsController {
             return ResponseEntity.ok(formattedTimestamp);
         }
 
-  //  @GetMapping("/market_cap")
-
-  //  @GetMapping("/market_cap_rank")
-
- //   @GetMapping("/high_24h")
-
-
  //   @GetMapping("/all_data")
  //   @GetMapping("/chart")
-
-
 }
 
