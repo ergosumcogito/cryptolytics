@@ -26,7 +26,30 @@ public class CryptoQueryService {
     private final CurrencyIndicatorValueRepository currencyIndicatorValueRepository;
 
     public enum IndicatorType {
-        PRICE, VOLUME
+        PRICE("Price"),
+        VOLUME("Volume"),
+        MARKET_CAP("Market_Cap"),
+        MARKET_CAP_RANK("Market_Cap_Rank"),
+        HIGH_24H("High_24h");
+
+        private final String name;
+
+        IndicatorType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static IndicatorType fromString(String name) {
+            for (IndicatorType type : IndicatorType.values()) {
+                if (type.name.equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Invalid indicator: " + name);
+        }
     }
 
     @Autowired
@@ -40,52 +63,30 @@ public class CryptoQueryService {
         this.currencyIndicatorValueRepository = currencyIndicatorValueRepository;
     }
 
-    public BigDecimal getPriceForCurrency(String currencySymbol) {
+    public BigDecimal getIndicatorValue(String currencySymbol, String indicatorName) {
         // Get currency entity by symbol
         Currency currency = currencyRepository.findBySymbol(currencySymbol)
                 .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
 
-        // Get "Price" indicator
-        Indicator priceIndicator = indicatorRepository.findByName("Price")
-                .orElseThrow(() -> new EntityNotFoundException("Indicator 'Price' not found"));
+        // Get Indicator
+        Indicator indicator = indicatorRepository.findByName(indicatorName)
+                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorName));
 
-        // Find the CurrencyIndicator (currency + price indicator)
+        // Find the CurrencyIndicator
         CurrencyIndicator currencyIndicator = currencyIndicatorRepository
-                .findByCurrencyAndIndicator(currency, priceIndicator)
+                .findByCurrencyAndIndicator(currency, indicator)
                 .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
 
         // Get the most recent value for this CurrencyIndicator
         CurrencyIndicatorValue value = currencyIndicatorValueRepository
                 .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
-                .orElseThrow(() -> new EntityNotFoundException("Price data not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Indicator data not found"));
 
         return value.getValue();
     }
 
-    public Object getIndicatorForCurrency(String currency, IndicatorType indicatorType) {
-        return switch (indicatorType) {
-            case PRICE -> getPriceForCurrency(currency);
-            case VOLUME -> getVolumeForCurrency(currency);
-            default -> throw new IllegalArgumentException("Invalid indicator: " + indicatorType);
-        };
-    }
-
-    public BigDecimal getVolumeForCurrency(String currencySymbol) {
-        Currency currency = currencyRepository.findBySymbol(currencySymbol)
-                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
-
-        Indicator volumeIndicator = indicatorRepository.findByName("Volume")
-                .orElseThrow(() -> new EntityNotFoundException("Indicator 'Volume' not found"));
-
-        CurrencyIndicator currencyIndicator = currencyIndicatorRepository
-                .findByCurrencyAndIndicator(currency, volumeIndicator)
-                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
-
-        CurrencyIndicatorValue value = currencyIndicatorValueRepository
-                .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
-                .orElseThrow(() -> new EntityNotFoundException("Volume data not found"));
-
-        return value.getValue();
+    public Object getIndicatorForCurrency(String currencySymbol, IndicatorType indicatorType) {
+       return getIndicatorValue(currencySymbol, indicatorType.getName());
     }
 
     public List<Currency> getAllCurrencies(){
