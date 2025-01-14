@@ -81,3 +81,28 @@ VALUES (1, 38500.75),  -- BTC - Price
        (12, 39000),       -- BTC - High 24h
        (13, 3000),        -- ETH - High 24h
        (14, 1.01);        -- USDT - High 24h
+
+
+
+-- Insert test data into CurrencyIndicatorValues with various timestamps
+INSERT INTO Currency_Indicator_Value (currency_indicator_id, value, timestamp)
+VALUES
+    (1, 38500.75, '2025-01-01 10:00:00'),  -- BTC - Price, Jan 1, 2025
+    (1, 38900.40, '2025-01-02 10:00:00'),  -- BTC - Price, Jan 2, 2025
+    (1, 39500.20, '2025-01-03 10:00:00'),  -- BTC - Price, Jan 3, 2025
+    (1, 39250.55, '2025-01-04 10:00:00'),  -- BTC - Price, Jan 4, 2025
+    (1, 38000.10, '2025-01-05 10:00:00'),  -- BTC - Price, Jan 5, 2025
+    (1, 37500.80, '2025-01-06 10:00:00'),  -- BTC - Price, Jan 6, 2025
+    (1, 37000.60, '2025-01-07 10:00:00');  -- BTC - Price, Jan 7, 2025
+
+-- Insert test data for other indicators (Volume, Market Cap, etc.) with timestamps
+INSERT INTO Currency_Indicator_Value (currency_indicator_id, value, timestamp)
+VALUES
+    (3, 100000000, '2025-01-01 10:00:00'),  -- BTC - Volume, Jan 1, 2025
+    (6, 720000000000, '2025-01-01 10:00:00'), -- BTC - Market Cap, Jan 1, 2025
+    (9, 1, '2025-01-01 10:00:00'),  -- BTC - Market Cap Rank, Jan 1, 2025
+    (12, 39000, '2025-01-01 10:00:00'), -- BTC - High 24h, Jan 1, 2025
+    (2, 2800.45, '2025-01-01 10:00:00'),   -- ETH - Price, Jan 1, 2025
+    (5, 1, '2025-01-01 10:00:00'),         -- USDT - Price, Jan 1, 2025
+    (4, 1500000, '2025-01-01 10:00:00');   -- ETH - Volume, Jan 1, 2025
+
