@@ -1,6 +1,7 @@
 package com.backendproject.cryptolytics.api.controller;
 
 import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
+import com.backendproject.cryptolytics.api.dto.HistoryEntryDTO;
 import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.domain.service.CryptoQueryService;
 import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicatorValue;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cryptolytics")
@@ -53,17 +55,27 @@ public class CryptolyticsController {
         }
 
     @GetMapping("/currencies/{currency}/{indicator}/history")
-    public ResponseEntity<List> getIndicatorHistory(
+    public ResponseEntity<Map <String, List<HistoryEntryDTO>>> getIndicatorHistory(
             @PathVariable String currency,
             @PathVariable String indicator,
              @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
 
             List<CurrencyIndicatorValue> history  = cryptoQueryService.getIndicatorHistory(currency, indicator, startDate, endDate);
-            return ResponseEntity.ok(history);
+
+            List<HistoryEntryDTO> historyDTOs = history.stream()
+                    .map(entry -> new HistoryEntryDTO(entry.getTimestamp(), indicator.toLowerCase(),  entry.getValue()))
+                    .toList();
+
+            Map<String, List<HistoryEntryDTO>> response = Map.of("history", historyDTOs);
+
+            return ResponseEntity.ok(response);
     }
 
-    // CRUD with user saved quaries - GET all,POST new one, PUT updtae one, DELETE one
+
+
+
+    // CRUD with user saved queries - GET all,POST new one, PUT update one, DELETE one
     // @GetMapping("/saved-queries") // GET all
     // @GetMapping("/saved-queries") // POST create new one
     // @GetMapping("/saved-queries/{name}") // GET one by name
@@ -77,7 +89,5 @@ public class CryptolyticsController {
 
     //   @GetMapping("/stats")
     // for all stats , total number of currencies, total number of indicators, ...
-
-    // 1 to N relationship - history of particular indicator (price history)
 }
 
