@@ -64,12 +64,14 @@ public class CryptoQueryService {
     }
 
     public BigDecimal getIndicatorValue(String currencySymbol, String indicatorName) {
+        IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
+
         // Get currency entity by symbol
         Currency currency = currencyRepository.findBySymbol(currencySymbol)
                 .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
 
         // Get Indicator
-        Indicator indicator = indicatorRepository.findByName(indicatorName)
+        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorName));
 
         // Find the CurrencyIndicator
@@ -85,10 +87,6 @@ public class CryptoQueryService {
         return value.getValue();
     }
 
-    public Object getIndicatorForCurrency(String currencySymbol, IndicatorType indicatorType) {
-       return getIndicatorValue(currencySymbol, indicatorType.getName());
-    }
-
     public List<Currency> getAllCurrencies(){
         return currencyRepository.findAll();
     }
@@ -101,5 +99,34 @@ public class CryptoQueryService {
         LocalDateTime oldestTimestamp = currencyIndicatorValueRepository.findFirstByOrderByTimestampAsc().getTimestamp();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd.MM");
         return oldestTimestamp.format(formatter);
+    }
+
+    public List<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName, String startDate, String endDate){
+        IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
+
+        // Get currency entity by symbol
+        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+
+        // Get Indicator
+        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorName));
+
+        // Find the CurrencyIndicator
+        CurrencyIndicator currencyIndicator = currencyIndicatorRepository
+                .findByCurrencyAndIndicator(currency, indicator)
+                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
+
+        // Query the database with startDate and endDate
+        LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate) : null;
+        LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate) : null;
+
+        if (start != null && end != null) {
+            return currencyIndicatorValueRepository
+                    .findByCurrencyIndicatorAndTimestampBetween(currencyIndicator, start, end);
+        } else {
+            return currencyIndicatorValueRepository
+                    .findByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator);
+        }
     }
 }

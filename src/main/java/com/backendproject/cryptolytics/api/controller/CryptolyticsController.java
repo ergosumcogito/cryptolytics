@@ -3,6 +3,7 @@ package com.backendproject.cryptolytics.api.controller;
 import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
 import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.domain.service.CryptoQueryService;
+import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicatorValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +25,9 @@ public class CryptolyticsController {
     public ResponseEntity<Object> getIndicatorForCurrency(
             @PathVariable String currency,
             @PathVariable String indicator) {
-        try{
-            CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.valueOf(indicator.toUpperCase());
-            Object result  = cryptoQueryService.getIndicatorForCurrency(currency, indicatorType);
-            return ResponseEntity.ok(result);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unsupported indicator: " + indicator);
-        }
 
+            Object result  = cryptoQueryService.getIndicatorValue(currency, indicator);
+            return ResponseEntity.ok(result);
     }
 
     @GetMapping("/currencies")
@@ -51,10 +47,21 @@ public class CryptolyticsController {
     }
 
     @GetMapping("/last-updated")
-        public ResponseEntity<String> getOldestUpdated(){
+    public ResponseEntity<String> getOldestUpdated(){
             String formattedTimestamp = cryptoQueryService.getFormattedOldestUpdateTimestamp();
             return ResponseEntity.ok(formattedTimestamp);
         }
+
+    @GetMapping("/currencies/{currency}/{indicator}/history")
+    public ResponseEntity<List> getIndicatorHistory(
+            @PathVariable String currency,
+            @PathVariable String indicator,
+             @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+            List<CurrencyIndicatorValue> history  = cryptoQueryService.getIndicatorHistory(currency, indicator, startDate, endDate);
+            return ResponseEntity.ok(history);
+    }
 
     // CRUD with user saved quaries - GET all,POST new one, PUT updtae one, DELETE one
     // @GetMapping("/saved-queries") // GET all
