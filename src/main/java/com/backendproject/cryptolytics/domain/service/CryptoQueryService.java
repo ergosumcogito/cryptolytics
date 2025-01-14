@@ -9,6 +9,7 @@ import com.backendproject.cryptolytics.persistence.repository.CurrencyIndicatorV
 import com.backendproject.cryptolytics.persistence.repository.CurrencyRepository;
 import com.backendproject.cryptolytics.persistence.repository.IndicatorRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class CryptoQueryService {
     private final CurrencyIndicatorRepository currencyIndicatorRepository;
     private final CurrencyIndicatorValueRepository currencyIndicatorValueRepository;
 
+    @Getter
     public enum IndicatorType {
         PRICE("Price"),
         VOLUME("Volume"),
@@ -36,10 +38,6 @@ public class CryptoQueryService {
 
         IndicatorType(String name) {
             this.name = name;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public static IndicatorType fromString(String name) {
