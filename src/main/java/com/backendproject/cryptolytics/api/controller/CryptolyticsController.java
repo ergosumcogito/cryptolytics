@@ -20,7 +20,7 @@ public class CryptolyticsController {
         this.cryptoQueryService = cryptoQueryService;
     }
 
-    @GetMapping("/currencies/{currency}/data/{indicator}")
+    @GetMapping("/currencies/{currency}/{indicator}")
     public ResponseEntity<Object> getIndicatorForCurrency(
             @PathVariable String currency,
             @PathVariable String indicator) {
