@@ -113,7 +113,7 @@ CREATE TABLE ApiKeys (
 );
 
 -- Insert a test API key
-INSERT INTO ApiKeys (api_key) VALUES ('test-api-key-123');
+INSERT INTO ApiKeys (api_key) VALUES ('test-api-key');
 
 -- Create table for Saved Queries
 CREATE TABLE SavedQueries (

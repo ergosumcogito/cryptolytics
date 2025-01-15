@@ -17,7 +17,7 @@ public class ApiKeyController {
     }
 
     @PostMapping("/api-keys")
-    public ResponseEntity<String> generateApiKey(@RequestParam String userId) {
+    public ResponseEntity<String> generateApiKey(@RequestParam(defaultValue = "defaultUser") String userId) {
         String apiKey = apiKeyService.generateApiKeyForUser(userId);
         return ResponseEntity.ok(apiKey);
     }

@@ -19,8 +19,7 @@ public class ApiKeyService {
     }
 
     public String generateApiKeyForUser(String userId) {
-        // Logic for generating a secure API key
-        String apiKey = UUID.randomUUID().toString(); // Example key generator
+        String apiKey = UUID.randomUUID().toString();
         apiKeyRepository.save(new ApiKey(userId, apiKey));
         return apiKey;
     }
