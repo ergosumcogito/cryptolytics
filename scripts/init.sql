@@ -83,7 +83,6 @@ VALUES (1, 38500.75),  -- BTC - Price
        (14, 1.01);        -- USDT - High 24h
 
 
-
 -- Insert test data into CurrencyIndicatorValues with various timestamps
 INSERT INTO Currency_Indicator_Value (currency_indicator_id, value, timestamp)
 VALUES
@@ -106,3 +105,26 @@ VALUES
     (5, 1, '2025-01-01 10:00:00'),         -- USDT - Price, Jan 1, 2025
     (4, 1500000, '2025-01-01 10:00:00');   -- ETH - Volume, Jan 1, 2025
 
+-- Create table for API Keys
+CREATE TABLE ApiKeys (
+                         id SERIAL PRIMARY KEY,
+                         api_key VARCHAR(128) NOT NULL UNIQUE,
+                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert a test API key
+INSERT INTO ApiKeys (api_key) VALUES ('test-api-key-123');
+
+-- Create table for Saved Queries
+CREATE TABLE SavedQueries (
+                              id SERIAL PRIMARY KEY,
+                              api_key_id INTEGER NOT NULL,
+                              currency_id INTEGER NOT NULL,
+                              indicator_id INTEGER NOT NULL,
+                              FOREIGN KEY (api_key_id) REFERENCES ApiKeys (id),
+                              FOREIGN KEY (currency_id) REFERENCES Currency (id),
+                              FOREIGN KEY (indicator_id) REFERENCES Indicator (id)
+);
+
+-- Insert a test saved query
+INSERT INTO SavedQueries (api_key_id, currency_id, indicator_id) VALUES (1, 1, 1);
