@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cryptolytics")
+@RequestMapping("/cryptolytics/api-keys")
 public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;
@@ -16,15 +16,18 @@ public class ApiKeyController {
         this.apiKeyService = apiKeyService;
     }
 
-    @PostMapping("/api-keys")
+    @PostMapping
     public ResponseEntity<String> generateApiKey(@RequestParam(defaultValue = "defaultUser") String userId) {
         String apiKey = apiKeyService.generateApiKeyForUser(userId);
         return ResponseEntity.ok(apiKey);
     }
 
-    @DeleteMapping("/api-keys/{key}")
+    @DeleteMapping("/{key}")
     public ResponseEntity<String> deleteApiKey(@PathVariable String key) {
         boolean deleted = apiKeyService.deleteApiKey(key);
+
+        //TODO: when apiKey is deleted, all savedQueries are deleted
+
         if (deleted) {
             return ResponseEntity.ok("API key deleted successfully.");
         } else {
