@@ -32,5 +32,13 @@ public class ApiKeyService {
         }
         return false;
     }
+
+    public ApiKey findByApiKey(String apiKey) {
+        return apiKeyRepository.findByApiKey(apiKey)
+                .orElse(null);
+    }
+
+
+
 }
 
