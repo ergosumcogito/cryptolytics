@@ -70,7 +70,7 @@ public class CryptoQueryService {
 
         // Get Indicator
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorName));
+                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, error already handled
 
         // Find the CurrencyIndicator
         CurrencyIndicator currencyIndicator = currencyIndicatorRepository

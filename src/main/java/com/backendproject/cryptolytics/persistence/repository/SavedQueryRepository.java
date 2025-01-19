@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface SavedQueryRepository extends JpaRepository<SavedQuery, Long> {
     Optional<SavedQuery> findByQueryNameAndApiKey(String queryName, ApiKey apiKey);
     List<SavedQuery> findAllByApiKey(ApiKey apiKey);
+    boolean existsByApiKeyAndQueryName(ApiKey apiKey, String queryName);
 }

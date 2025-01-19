@@ -57,16 +57,34 @@ public class SavedQueryController {
         }
     }
 
+    @PostMapping("/{apiKey}/{queryName}/{currency}/{indicator}")
+    public ResponseEntity<?> createSavedQuery(@PathVariable String apiKey,
+                                              @PathVariable String queryName,
+                                              @PathVariable String currency,
+                                              @PathVariable String indicator) {
+        // Validate the API key
+        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        if (apiKeyEntity == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
+        }
+
+        try {
+            // Create a new saved query
+            savedQueryService.createSavedQuery(apiKeyEntity, queryName, currency, indicator);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Saved query created successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
 
 
 
     // CRUD with user saved queries - GET all,POST new one, PUT update one, DELETE one
-    // @GetMapping("/saved-queries") // GET all
-    // @GetMapping("/saved-queries") // POST create new one
-    // @GetMapping("/saved-queries/{name}") // GET one by name
     // @GetMapping("/saved-queries/{name}") // PUT update one by name
     // @GetMapping("/saved-queries/{name}") // DELETE one by name
     // @GetMapping("/saved-queries") // DELETE all saved queries
-    // /saved-queries/{name}/details - properties of a saved query
-
 }

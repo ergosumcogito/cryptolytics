@@ -126,7 +126,7 @@ CREATE TABLE Saved_Query
     query_name   VARCHAR(100) NOT NULL, -- Custom user-defined name for the query
     currency_id  INTEGER      NOT NULL, -- Link to Currency
     indicator_id INTEGER      NOT NULL, -- Link to Indicator
-    FOREIGN KEY (api_key_id) REFERENCES Api_Key (id),
+    FOREIGN KEY (api_key_id) REFERENCES Api_Key (id) ON DELETE CASCADE,
     FOREIGN KEY (currency_id) REFERENCES Currency (id),
     FOREIGN KEY (indicator_id) REFERENCES Indicator (id)
 );
