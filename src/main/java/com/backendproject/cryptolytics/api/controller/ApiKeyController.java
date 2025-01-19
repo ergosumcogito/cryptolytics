@@ -22,9 +22,9 @@ public class ApiKeyController {
         return ResponseEntity.ok(apiKey);
     }
 
-    @DeleteMapping("/{key}")
-    public ResponseEntity<String> deleteApiKey(@PathVariable String key) {
-        boolean deleted = apiKeyService.deleteApiKey(key);
+    @DeleteMapping("/{apiKey}")
+    public ResponseEntity<String> deleteApiKey(@PathVariable String apiKey) {
+        boolean deleted = apiKeyService.deleteApiKey(apiKey);
 
         //TODO: when apiKey is deleted, all savedQueries are deleted
 
