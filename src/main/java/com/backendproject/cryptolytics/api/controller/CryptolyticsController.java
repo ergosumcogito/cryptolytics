@@ -72,22 +72,5 @@ public class CryptolyticsController {
             return ResponseEntity.ok(response);
     }
 
-
-
-
-    // CRUD with user saved queries - GET all,POST new one, PUT update one, DELETE one
-    // @GetMapping("/saved-queries") // GET all
-    // @GetMapping("/saved-queries") // POST create new one
-    // @GetMapping("/saved-queries/{name}") // GET one by name
-    // @GetMapping("/saved-queries/{name}") // PUT update one by name
-    // @GetMapping("/saved-queries/{name}") // DELETE one by name
-    // @GetMapping("/saved-queries") // DELETE all saved queries
-    // all the actions with one entry, remember, with HATEOS!
-
-    // Endpoint for obtaining data of a result
-    // GET /cryptolytics/saved-queries/{id}/results
-
-    //   @GetMapping("/stats")
-    // for all stats , total number of currencies, total number of indicators, ...
 }
 
