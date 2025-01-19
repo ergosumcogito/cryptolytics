@@ -79,12 +79,45 @@ public class SavedQueryController {
         }
     }
 
+    @DeleteMapping("/{apiKey}/{queryName}")
+    public ResponseEntity<?> deleteSavedQuery(@PathVariable String apiKey, @PathVariable String queryName) {
+        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
 
+        if (apiKeyEntity == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
+        }
 
+        try {
+            savedQueryService.deleteSavedQuery(apiKeyEntity, queryName);
+            return ResponseEntity.ok("Saved query deleted successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting saved query");
+        }
+    }
 
+    @PutMapping("/{apiKey}/{existingQueryName}/{newQueryName}/{newCurrency}/{newIndicator}")
+    public ResponseEntity<?> updateSavedQuery(@PathVariable String apiKey,
+                                              @PathVariable String existingQueryName,
+                                              @PathVariable String newQueryName,
+                                              @PathVariable String newCurrency,
+                                              @PathVariable String newIndicator) {
+        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
 
-    // CRUD with user saved queries - GET all,POST new one, PUT update one, DELETE one
-    // @GetMapping("/saved-queries/{name}") // PUT update one by name
-    // @GetMapping("/saved-queries/{name}") // DELETE one by name
+        if (apiKeyEntity == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
+        }
+
+        try {
+            savedQueryService.updateSavedQuery(apiKeyEntity, existingQueryName, newQueryName, newCurrency, newIndicator);
+            return ResponseEntity.ok("Saved query updated successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating saved query");
+        }
+    }
+
     // @GetMapping("/saved-queries") // DELETE all saved queries
 }

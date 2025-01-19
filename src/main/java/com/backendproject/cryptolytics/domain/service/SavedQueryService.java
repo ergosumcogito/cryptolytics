@@ -97,4 +97,29 @@ public class SavedQueryService {
         savedQueryRepository.save(savedQuery);
     }
 
+    public void deleteSavedQuery(ApiKey apiKey, String queryName) {
+        SavedQuery savedQuery = savedQueryRepository.findByQueryNameAndApiKey(queryName, apiKey)
+                .orElseThrow(() -> new EntityNotFoundException("Saved query not found"));
+        savedQueryRepository.delete(savedQuery);
+    }
+
+    public void updateSavedQuery(ApiKey apiKey, String existingQueryName, String newQueryName, String newCurrency, String newIndicator) {
+        SavedQuery savedQuery = savedQueryRepository.findByQueryNameAndApiKey(existingQueryName, apiKey)
+                .orElseThrow(() -> new EntityNotFoundException("Saved query not found"));
+
+        Currency currency = currencyRepository.findBySymbol(newCurrency)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
+
+        CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(newIndicator);
+
+        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Indicator not found")); // TODO: probably irrelevant, exception is already handled
+
+        savedQuery.setQueryName(newQueryName);
+        savedQuery.setCurrency(currency);
+        savedQuery.setIndicator(indicator);
+
+        savedQueryRepository.save(savedQuery);
+    }
+
 }
