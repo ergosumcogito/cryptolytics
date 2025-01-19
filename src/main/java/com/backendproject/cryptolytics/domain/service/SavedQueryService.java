@@ -1,5 +1,6 @@
 package com.backendproject.cryptolytics.domain.service;
 
+import com.backendproject.cryptolytics.api.dto.SavedQueryDTO;
 import com.backendproject.cryptolytics.persistence.entity.ApiKey;
 import com.backendproject.cryptolytics.persistence.entity.Currency;
 import com.backendproject.cryptolytics.persistence.entity.Indicator;
@@ -9,7 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SavedQueryService {
@@ -47,5 +50,17 @@ public class SavedQueryService {
                 savedQuery.getCurrency().getSymbol(),
                 savedQuery.getIndicator().getName()
         ).toString();
+    }
+
+    public List<SavedQueryDTO> getAllSavedQueriesByApiKey(ApiKey apiKey) {
+        List<SavedQuery> savedQueries = savedQueryRepository.findAllByApiKey(apiKey);
+
+        return savedQueries.stream()
+                .map(savedQuery -> new SavedQueryDTO(
+                        savedQuery.getQueryName(),
+                        savedQuery.getCurrency().getSymbol(),
+                        savedQuery.getIndicator().getName()
+                ))
+                .collect(Collectors.toList());
     }
 }
