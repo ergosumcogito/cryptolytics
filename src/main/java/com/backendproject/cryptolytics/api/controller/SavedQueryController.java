@@ -119,5 +119,19 @@ public class SavedQueryController {
         }
     }
 
-    // @GetMapping("/saved-queries") // DELETE all saved queries
+    @DeleteMapping("/{apiKey}")
+    public ResponseEntity<?> deleteAllSavedQueries(@PathVariable String apiKey) {
+        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        if (apiKeyEntity == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
+        }
+
+        try {
+            savedQueryService.deleteAllSavedQueriesByApiKey(apiKeyEntity);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("All saved queries deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

@@ -11,6 +11,7 @@ import com.backendproject.cryptolytics.persistence.repository.SavedQueryReposito
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,17 +33,6 @@ public class SavedQueryService {
         this.cryptoQueryService = cryptoQueryService;
         this.indicatorRepository = indicatorRepository;
         this.currencyRepository = currencyRepository;
-    }
-
-
-    public SavedQuery saveQuery(String queryName, ApiKey apiKey, Currency currency, Indicator indicator) {
-        SavedQuery savedQuery = new SavedQuery();
-        savedQuery.setQueryName(queryName);
-        savedQuery.setApiKey(apiKey);
-        savedQuery.setCurrency(currency);
-        savedQuery.setIndicator(indicator);
-
-        return savedQueryRepository.save(savedQuery);
     }
 
     public Optional<SavedQuery> findByQueryNameAndApiKey(String queryName, ApiKey apiKey) {
@@ -120,6 +110,15 @@ public class SavedQueryService {
         savedQuery.setIndicator(indicator);
 
         savedQueryRepository.save(savedQuery);
+    }
+
+    @Transactional
+    public void deleteAllSavedQueriesByApiKey(ApiKey apiKey) {
+        List<SavedQuery> savedQueries = savedQueryRepository.findAllByApiKey(apiKey);
+
+        if (!savedQueries.isEmpty()) {
+           savedQueryRepository.deleteAll(savedQueries);
+        }
     }
 
 }

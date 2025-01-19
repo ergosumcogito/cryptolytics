@@ -72,7 +72,5 @@ public class CryptolyticsController {
             return ResponseEntity.ok(response);
     }
 
-    //   @GetMapping("/stats")
-    // for all stats , total number of currencies, total number of indicators, ...
 }
 
