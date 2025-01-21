@@ -5,11 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Indicator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +16,11 @@ public class Indicator {
     private String name;
     private String description;
 
-    // Getters and setters
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -5,10 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 public class ApiKey {
 
@@ -23,6 +21,14 @@ public class ApiKey {
 
     public ApiKey(String userId, String apiKey) {
         this.userId = userId;
+        this.apiKey = apiKey;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 }

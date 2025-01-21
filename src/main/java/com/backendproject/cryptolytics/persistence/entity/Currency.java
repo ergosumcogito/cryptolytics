@@ -5,11 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +16,11 @@ public class Currency {
     private String symbol;
     private String name;
 
-   // Getters and setters
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

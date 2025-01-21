@@ -2,10 +2,8 @@ package com.backendproject.cryptolytics.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 public class SavedQuery {
 
@@ -26,4 +24,20 @@ public class SavedQuery {
     @ManyToOne
     @JoinColumn(name = "indicator_id", nullable = false)
     private Indicator indicator;
+
+    public void setApiKey(ApiKey apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public void setQueryName(String queryName) {
+        this.queryName = queryName;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public void setIndicator(Indicator indicator) {
+        this.indicator = indicator;
+    }
 }

@@ -2,11 +2,9 @@ package com.backendproject.cryptolytics.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class CurrencyIndicator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +16,11 @@ public class CurrencyIndicator {
     @ManyToOne
     private Indicator indicator;
 
-    // Getters and setters
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public void setIndicator(Indicator indicator) {
+        this.indicator = indicator;
+    }
 }

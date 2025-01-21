@@ -2,14 +2,12 @@ package com.backendproject.cryptolytics.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 public class CurrencyIndicatorValue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +19,15 @@ public class CurrencyIndicatorValue {
     private BigDecimal value;
     private LocalDateTime timestamp;
 
-    // Getters and setters
+    public void setCurrencyIndicator(CurrencyIndicator currencyIndicator) {
+        this.currencyIndicator = currencyIndicator;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
