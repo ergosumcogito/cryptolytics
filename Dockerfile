@@ -7,7 +7,7 @@ COPY pom.xml /app/
 COPY src /app/src/
 
 # Execute tests
-RUN mvn clean install
+RUN mvn verify
 
 # Stage 2: Java runtime environment
 FROM eclipse-temurin:21-jammy
