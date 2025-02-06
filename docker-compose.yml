@@ -1,3 +1,5 @@
+version: '2.29.7'
+
 services:
 
   db:
@@ -13,6 +15,7 @@ services:
       - "5432:5432"
 
   app:
+    image: cryptolytics-app:latest
     build: .
     ports:
       - "8080:8080"

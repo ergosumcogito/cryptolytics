@@ -6,8 +6,7 @@ WORKDIR /app
 COPY pom.xml /app/
 COPY src /app/src/
 
-# Execute tests
-RUN mvn verify
+RUN mvn clean install -Ddocker.skip=true
 
 # Stage 2: Java runtime environment
 FROM eclipse-temurin:21-jammy
