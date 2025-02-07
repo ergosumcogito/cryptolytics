@@ -42,4 +42,3 @@ volumes:
 networks:
   crypto_network:
     driver: bridge
-    external: true

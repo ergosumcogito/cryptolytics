@@ -120,11 +120,10 @@
                             </external>
                         </image>
                     </images>
+
+                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                 </configuration>
-
             </plugin>
-
         </plugins>
     </build>
-
 </project>
