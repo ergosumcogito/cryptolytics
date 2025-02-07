@@ -105,24 +105,20 @@
                     <images>
                         <image>
                             <name>cryptolytics-app:latest</name>
-                            <alias>app</alias>
                             <external>
                                 <type>compose</type>
                                 <basedir>${project.basedir}</basedir>
                                 <composeFile>docker-compose.yml</composeFile>
+                            <run>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>crypto_network</name>
+                                    <alias>app</alias>
+                                    <alias>db</alias>
+                                </network>
+                            </run>
                             </external>
                         </image>
-
-<!--                        <image>-->
-<!--                            <name>postgres:latest</name>-->
-<!--                            <alias>db</alias>-->
-<!--                            <external>-->
-<!--                                <type>compose</type>-->
-<!--                                <basedir>${project.basedir}</basedir>-->
-<!--                                <composeFile>docker-compose.yml</composeFile>-->
-<!--                            </external>-->
-<!--                        </image>-->
-
                     </images>
                 </configuration>
 
