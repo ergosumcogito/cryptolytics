@@ -100,7 +100,6 @@
 <!--                    </execution>-->
                 </executions>
 
-
                 <configuration>
                     <images>
                         <image>
@@ -109,18 +108,10 @@
                                 <type>compose</type>
                                 <basedir>${project.basedir}</basedir>
                                 <composeFile>docker-compose.yml</composeFile>
-                            <run>
-                                <network>
-                                    <mode>custom</mode>
-                                    <name>crypto_network</name>
-                                    <alias>app</alias>
-                                    <alias>db</alias>
-                                </network>
-                            </run>
                             </external>
                         </image>
                     </images>
-
+                    <!-- Auto creation of custom network on start and auto deletion on stop -->
                     <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                 </configuration>
             </plugin>
