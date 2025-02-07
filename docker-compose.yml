@@ -1,3 +1,5 @@
+version: '2.29.7'
+
 services:
 
   db:
@@ -11,8 +13,14 @@ services:
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+        crypto_network:
+          aliases:
+              - db
+
 
   app:
+    image: cryptolytics-app:latest
     build: .
     ports:
       - "8080:8080"
@@ -22,8 +30,15 @@ services:
       SPRING_DATASOURCE_PASSWORD: db_admin
     depends_on:
       - db
-
+    networks:
+      crypto_network:
+            aliases:
+              - app
 
 
 volumes:
   postgres_data:
+
+networks:
+  crypto_network:
+    driver: bridge
