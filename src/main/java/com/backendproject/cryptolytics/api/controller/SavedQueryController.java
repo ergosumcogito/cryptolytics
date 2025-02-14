@@ -1,10 +1,10 @@
 package com.backendproject.cryptolytics.api.controller;
 
 import com.backendproject.cryptolytics.api.dto.SavedQueryDTO;
-import com.backendproject.cryptolytics.domain.service.ApiKeyService;
-import com.backendproject.cryptolytics.domain.service.SavedQueryService;
-import com.backendproject.cryptolytics.persistence.entity.*;
-import jakarta.persistence.EntityNotFoundException;
+import com.backendproject.cryptolytics.application.service.ApiKeyService;
+import com.backendproject.cryptolytics.application.service.SavedQueryService;
+import com.backendproject.cryptolytics.domain.model.ApiKey;
+import com.backendproject.cryptolytics.infrastructure.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,30 +27,30 @@ public class SavedQueryController {
 
     @GetMapping("/{apiKey}/{queryName}")
     public ResponseEntity<?> getSavedQueryValue(@PathVariable String apiKey, @PathVariable String queryName) {
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
 
-        if (apiKeyEntity == null) {
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
-            String indicatorValue = savedQueryService.getSavedQueryIndicatorValue(queryName, apiKeyEntity);
+            String indicatorValue = savedQueryService.getSavedQueryIndicatorValue(queryName, apiKeyModel);
             return ResponseEntity.ok(indicatorValue);
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @GetMapping("/{apiKey}")
     public ResponseEntity<?> getSavedQueriesByApiKey(@PathVariable String apiKey) {
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
 
-        if (apiKeyEntity == null) {
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
-            List<SavedQueryDTO> savedQueries = savedQueryService.getAllSavedQueriesByApiKey(apiKeyEntity);
+            List<SavedQueryDTO> savedQueries = savedQueryService.getAllSavedQueriesByApiKey(apiKeyModel);
             return ResponseEntity.ok(savedQueries);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching saved queries");
@@ -63,16 +63,16 @@ public class SavedQueryController {
                                               @PathVariable String currency,
                                               @PathVariable String indicator) {
         // Validate the API key
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
-        if (apiKeyEntity == null) {
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
             // Create a new saved query
-            savedQueryService.createSavedQuery(apiKeyEntity, queryName, currency, indicator);
+            savedQueryService.createSavedQuery(apiKeyModel, queryName, currency, indicator);
             return ResponseEntity.status(HttpStatus.CREATED).body("Saved query created successfully");
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -81,16 +81,16 @@ public class SavedQueryController {
 
     @DeleteMapping("/{apiKey}/{queryName}")
     public ResponseEntity<?> deleteSavedQuery(@PathVariable String apiKey, @PathVariable String queryName) {
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
 
-        if (apiKeyEntity == null) {
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
-            savedQueryService.deleteSavedQuery(apiKeyEntity, queryName);
+            savedQueryService.deleteSavedQuery(apiKeyModel, queryName);
             return ResponseEntity.ok("Saved query deleted successfully");
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting saved query");
@@ -103,16 +103,16 @@ public class SavedQueryController {
                                               @PathVariable String newQueryName,
                                               @PathVariable String newCurrency,
                                               @PathVariable String newIndicator) {
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
 
-        if (apiKeyEntity == null) {
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
-            savedQueryService.updateSavedQuery(apiKeyEntity, existingQueryName, newQueryName, newCurrency, newIndicator);
+            savedQueryService.updateSavedQuery(apiKeyModel, existingQueryName, newQueryName, newCurrency, newIndicator);
             return ResponseEntity.ok("Saved query updated successfully");
-        } catch (EntityNotFoundException e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating saved query");
@@ -121,13 +121,13 @@ public class SavedQueryController {
 
     @DeleteMapping("/{apiKey}")
     public ResponseEntity<?> deleteAllSavedQueries(@PathVariable String apiKey) {
-        ApiKey apiKeyEntity = apiKeyService.findByApiKey(apiKey);
-        if (apiKeyEntity == null) {
+        ApiKey apiKeyModel = apiKeyService.findByApiKey(apiKey);
+        if (apiKeyModel == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
         }
 
         try {
-            savedQueryService.deleteAllSavedQueriesByApiKey(apiKeyEntity);
+            savedQueryService.deleteAllSavedQueriesByApiKey(apiKeyModel);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("All saved queries deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
