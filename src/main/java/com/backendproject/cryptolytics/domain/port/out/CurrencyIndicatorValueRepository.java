@@ -1,14 +1,13 @@
-package com.backendproject.cryptolytics.persistence.repository;
+package com.backendproject.cryptolytics.domain.port.out;
 
-import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicator;
-import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicatorValue;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.backendproject.cryptolytics.domain.model.CurrencyIndicator;
+import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CurrencyIndicatorValueRepository extends JpaRepository<CurrencyIndicatorValue, Long> {
+public interface CurrencyIndicatorValueRepository {
     List<CurrencyIndicatorValue> findByCurrencyIndicator(CurrencyIndicator currencyIndicator);
     Optional<CurrencyIndicatorValue> findTopByCurrencyIndicatorOrderByTimestampDesc(CurrencyIndicator currencyIndicator);
     CurrencyIndicatorValue findFirstByOrderByTimestampAsc();
