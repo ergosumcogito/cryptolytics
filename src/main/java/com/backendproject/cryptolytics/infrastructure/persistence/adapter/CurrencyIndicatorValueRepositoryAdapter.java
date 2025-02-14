@@ -3,6 +3,7 @@ package com.backendproject.cryptolytics.infrastructure.persistence.adapter;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicator;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
 import com.backendproject.cryptolytics.domain.port.out.CurrencyIndicatorValueRepository;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.CurrencyIndicatorValueEntity;
 import com.backendproject.cryptolytics.infrastructure.persistence.mapper.CurrencyIndicatorMapper;
 import com.backendproject.cryptolytics.infrastructure.persistence.mapper.CurrencyIndicatorValueMapper;
 import com.backendproject.cryptolytics.infrastructure.persistence.repository.CurrencyIndicatorValueEntityRepository;
@@ -37,9 +38,8 @@ public class CurrencyIndicatorValueRepositoryAdapter implements CurrencyIndicato
 
     @Override
     public CurrencyIndicatorValue findFirstByOrderByTimestampAsc() {
-        return currencyIndicatorValueEntityRepository.findFirstByOrderByTimestampAsc() != null
-                ? currencyIndicatorValueMapper.toDomain(currencyIndicatorValueEntityRepository.findFirstByOrderByTimestampAsc())
-                : null;
+        CurrencyIndicatorValueEntity entity = currencyIndicatorValueEntityRepository.findFirstByOrderByTimestampAsc();
+        return entity != null ? currencyIndicatorValueMapper.toDomain(entity) : null;
     }
 
     @Override

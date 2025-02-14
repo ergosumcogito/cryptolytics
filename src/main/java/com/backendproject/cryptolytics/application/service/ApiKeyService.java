@@ -1,7 +1,7 @@
 package com.backendproject.cryptolytics.application.service;
 
-import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
-import com.backendproject.cryptolytics.infrastructure.persistence.repository.ApiKeyRepository;
+import com.backendproject.cryptolytics.domain.model.ApiKey;
+import com.backendproject.cryptolytics.domain.port.out.ApiKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +37,5 @@ public class ApiKeyService {
         return apiKeyRepository.findByApiKey(apiKey)
                 .orElse(null);
     }
-
-
-
 }
 

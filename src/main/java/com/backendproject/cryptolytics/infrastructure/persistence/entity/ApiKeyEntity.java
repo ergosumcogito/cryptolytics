@@ -2,11 +2,13 @@ package com.backendproject.cryptolytics.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "Api_Key")
-public class ApiKey {
+public class ApiKeyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,9 +17,13 @@ public class ApiKey {
     private String userId;
     private String apiKey;
 
-    public ApiKey() {}
+    public ApiKeyEntity(String userId, String apiKey) {
+        this.userId = userId;
+        this.apiKey = apiKey;
+    }
 
-    public ApiKey(String userId, String apiKey) {
+    public ApiKeyEntity(Long id, String userId, String apiKey) {
+        this.id = id;
         this.userId = userId;
         this.apiKey = apiKey;
     }

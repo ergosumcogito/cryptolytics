@@ -1,18 +1,17 @@
 package com.backendproject.cryptolytics.application.service;
 
 import com.backendproject.cryptolytics.api.dto.SavedQueryDTO;
-import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
-import com.backendproject.cryptolytics.infrastructure.persistence.entity.CurrencyEntity;
-import com.backendproject.cryptolytics.infrastructure.persistence.entity.IndicatorEntity;
-import com.backendproject.cryptolytics.infrastructure.persistence.entity.SavedQuery;
-import com.backendproject.cryptolytics.infrastructure.persistence.repository.CurrencyEntityRepository;
-import com.backendproject.cryptolytics.infrastructure.persistence.repository.IndicatorEntityRepository;
-import com.backendproject.cryptolytics.infrastructure.persistence.repository.SavedQueryRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.backendproject.cryptolytics.domain.model.ApiKey;
+import com.backendproject.cryptolytics.domain.model.Currency;
+import com.backendproject.cryptolytics.domain.model.Indicator;
+import com.backendproject.cryptolytics.domain.model.SavedQuery;
+import com.backendproject.cryptolytics.domain.port.out.CurrencyRepository;
+import com.backendproject.cryptolytics.domain.port.out.IndicatorRepository;
+import com.backendproject.cryptolytics.domain.port.out.SavedQueryRepository;
+import com.backendproject.cryptolytics.infrastructure.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,17 +21,17 @@ public class SavedQueryService {
 
     private final SavedQueryRepository savedQueryRepository;
     private final CryptoQueryService cryptoQueryService;
-    private final IndicatorEntityRepository indicatorEntityRepository;
-    private final CurrencyEntityRepository currencyEntityRepository;
+    private final IndicatorRepository indicatorRepository;
+    private final CurrencyRepository currencyRepository;
 
     @Autowired
     public SavedQueryService(SavedQueryRepository savedQueryRepository,
-                             CryptoQueryService cryptoQueryService, IndicatorEntityRepository indicatorEntityRepository,
-                             CurrencyEntityRepository currencyEntityRepository) {
+                             CryptoQueryService cryptoQueryService, IndicatorRepository indicatorRepository,
+                             CurrencyRepository currencyRepository) {
         this.savedQueryRepository = savedQueryRepository;
         this.cryptoQueryService = cryptoQueryService;
-        this.indicatorEntityRepository = indicatorEntityRepository;
-        this.currencyEntityRepository = currencyEntityRepository;
+        this.indicatorRepository = indicatorRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     public Optional<SavedQuery> findByQueryNameAndApiKey(String queryName, ApiKey apiKey) {
@@ -42,11 +41,11 @@ public class SavedQueryService {
 
     public String getSavedQueryIndicatorValue(String queryName, ApiKey apiKey) {
         SavedQuery savedQuery = findByQueryNameAndApiKey(queryName, apiKey)
-                .orElseThrow(() -> new EntityNotFoundException("Saved query not found: " + queryName));
+                .orElseThrow(() -> new NotFoundException("Saved query not found: " + queryName));
 
         return cryptoQueryService.getIndicatorValue(
-                savedQuery.getCurrencyEntity().getSymbol(),
-                savedQuery.getIndicatorEntity().getName()
+                savedQuery.getCurrency().getSymbol(),
+                savedQuery.getIndicator().getName()
         ).toString();
     }
 
@@ -56,8 +55,8 @@ public class SavedQueryService {
         return savedQueries.stream()
                 .map(savedQuery -> new SavedQueryDTO(
                         savedQuery.getQueryName(),
-                        savedQuery.getCurrencyEntity().getSymbol(),
-                        savedQuery.getIndicatorEntity().getName()
+                        savedQuery.getCurrency().getSymbol(),
+                        savedQuery.getIndicator().getName()
                 ))
                 .collect(Collectors.toList());
     }
@@ -66,12 +65,12 @@ public class SavedQueryService {
         CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(indicatorName);
 
         // Find the currency by its symbol
-        CurrencyEntity currencyEntity = currencyEntityRepository.findBySymbol(currencySymbol)
-                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+                .orElseThrow(() -> new NotFoundException("Currency not found: " + currencySymbol));
 
         // Find the indicator by its name
-        IndicatorEntity indicatorEntity = indicatorEntityRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, exception already handled
+        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, exception already handled
 
         // Check if a saved query with the same name already exists for the API key
         if (savedQueryRepository.existsByApiKeyAndQueryName(apiKey, queryName)) {
@@ -79,35 +78,31 @@ public class SavedQueryService {
         }
 
         // Create and save the new Saved Query
-        SavedQuery savedQuery = new SavedQuery();
-        savedQuery.setApiKey(apiKey);
-        savedQuery.setQueryName(queryName);
-        savedQuery.setCurrencyEntity(currencyEntity);
-        savedQuery.setIndicatorEntity(indicatorEntity);
+        SavedQuery savedQuery = new SavedQuery(apiKey, queryName, currency, indicator);
         savedQueryRepository.save(savedQuery);
     }
 
     public void deleteSavedQuery(ApiKey apiKey, String queryName) {
         SavedQuery savedQuery = savedQueryRepository.findByQueryNameAndApiKey(queryName, apiKey)
-                .orElseThrow(() -> new EntityNotFoundException("Saved query not found"));
+                .orElseThrow(() -> new NotFoundException("Saved query not found"));
         savedQueryRepository.delete(savedQuery);
     }
 
     public void updateSavedQuery(ApiKey apiKey, String existingQueryName, String newQueryName, String newCurrency, String newIndicator) {
         SavedQuery savedQuery = savedQueryRepository.findByQueryNameAndApiKey(existingQueryName, apiKey)
-                .orElseThrow(() -> new EntityNotFoundException("Saved query not found"));
+                .orElseThrow(() -> new NotFoundException("Saved query not found"));
 
-        CurrencyEntity currencyEntity = currencyEntityRepository.findBySymbol(newCurrency)
-                .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
+        Currency currency = currencyRepository.findBySymbol(newCurrency)
+                .orElseThrow(() -> new NotFoundException("Currency not found"));
 
         CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(newIndicator);
 
-        IndicatorEntity indicatorEntity = indicatorEntityRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Indicator not found")); // TODO: probably irrelevant, exception is already handled
+        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+                .orElseThrow(() -> new NotFoundException("Indicator not found")); // TODO: probably irrelevant, exception is already handled
 
         savedQuery.setQueryName(newQueryName);
-        savedQuery.setCurrencyEntity(currencyEntity);
-        savedQuery.setIndicatorEntity(indicatorEntity);
+        savedQuery.setCurrency(currency);
+        savedQuery.setIndicator(indicator);
 
         savedQueryRepository.save(savedQuery);
     }
