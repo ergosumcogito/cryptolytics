@@ -1,6 +1,6 @@
 package com.backendproject.cryptolytics.api.controller;
 
-import com.backendproject.cryptolytics.domain.service.ApiKeyService;
+import com.backendproject.cryptolytics.application.service.ApiKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

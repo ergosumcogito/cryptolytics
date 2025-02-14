@@ -1,7 +1,7 @@
-package com.backendproject.cryptolytics.persistence.repository;
+package com.backendproject.cryptolytics.infrastructure.persistence.repository;
 
-import com.backendproject.cryptolytics.persistence.entity.ApiKey;
-import com.backendproject.cryptolytics.persistence.entity.SavedQuery;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.SavedQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

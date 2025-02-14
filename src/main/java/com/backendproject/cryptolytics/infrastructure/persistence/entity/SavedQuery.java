@@ -1,10 +1,11 @@
-package com.backendproject.cryptolytics.persistence.entity;
+package com.backendproject.cryptolytics.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
 @Entity
+@Table(name = "Saved_Query")
 public class SavedQuery {
 
     @Id
@@ -19,11 +20,11 @@ public class SavedQuery {
 
     @ManyToOne
     @JoinColumn(name = "currency_id", nullable = false)
-    private Currency currency;
+    private CurrencyEntity currencyEntity;
 
     @ManyToOne
     @JoinColumn(name = "indicator_id", nullable = false)
-    private Indicator indicator;
+    private IndicatorEntity indicatorEntity;
 
     public void setApiKey(ApiKey apiKey) {
         this.apiKey = apiKey;
@@ -33,11 +34,11 @@ public class SavedQuery {
         this.queryName = queryName;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrencyEntity(CurrencyEntity currencyEntity) {
+        this.currencyEntity = currencyEntity;
     }
 
-    public void setIndicator(Indicator indicator) {
-        this.indicator = indicator;
+    public void setIndicatorEntity(IndicatorEntity indicatorEntity) {
+        this.indicatorEntity = indicatorEntity;
     }
 }

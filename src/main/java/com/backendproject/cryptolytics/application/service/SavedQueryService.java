@@ -1,13 +1,13 @@
-package com.backendproject.cryptolytics.domain.service;
+package com.backendproject.cryptolytics.application.service;
 
 import com.backendproject.cryptolytics.api.dto.SavedQueryDTO;
-import com.backendproject.cryptolytics.persistence.entity.ApiKey;
-import com.backendproject.cryptolytics.persistence.entity.Currency;
-import com.backendproject.cryptolytics.persistence.entity.Indicator;
-import com.backendproject.cryptolytics.persistence.entity.SavedQuery;
-import com.backendproject.cryptolytics.persistence.repository.CurrencyRepository;
-import com.backendproject.cryptolytics.persistence.repository.IndicatorRepository;
-import com.backendproject.cryptolytics.persistence.repository.SavedQueryRepository;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.CurrencyEntity;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.IndicatorEntity;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.SavedQuery;
+import com.backendproject.cryptolytics.infrastructure.persistence.repository.CurrencyEntityRepository;
+import com.backendproject.cryptolytics.infrastructure.persistence.repository.IndicatorEntityRepository;
+import com.backendproject.cryptolytics.infrastructure.persistence.repository.SavedQueryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,17 +22,17 @@ public class SavedQueryService {
 
     private final SavedQueryRepository savedQueryRepository;
     private final CryptoQueryService cryptoQueryService;
-    private final IndicatorRepository indicatorRepository;
-    private final CurrencyRepository currencyRepository;
+    private final IndicatorEntityRepository indicatorEntityRepository;
+    private final CurrencyEntityRepository currencyEntityRepository;
 
     @Autowired
     public SavedQueryService(SavedQueryRepository savedQueryRepository,
-                             CryptoQueryService cryptoQueryService, IndicatorRepository indicatorRepository,
-                             CurrencyRepository currencyRepository) {
+                             CryptoQueryService cryptoQueryService, IndicatorEntityRepository indicatorEntityRepository,
+                             CurrencyEntityRepository currencyEntityRepository) {
         this.savedQueryRepository = savedQueryRepository;
         this.cryptoQueryService = cryptoQueryService;
-        this.indicatorRepository = indicatorRepository;
-        this.currencyRepository = currencyRepository;
+        this.indicatorEntityRepository = indicatorEntityRepository;
+        this.currencyEntityRepository = currencyEntityRepository;
     }
 
     public Optional<SavedQuery> findByQueryNameAndApiKey(String queryName, ApiKey apiKey) {
@@ -45,8 +45,8 @@ public class SavedQueryService {
                 .orElseThrow(() -> new EntityNotFoundException("Saved query not found: " + queryName));
 
         return cryptoQueryService.getIndicatorValue(
-                savedQuery.getCurrency().getSymbol(),
-                savedQuery.getIndicator().getName()
+                savedQuery.getCurrencyEntity().getSymbol(),
+                savedQuery.getIndicatorEntity().getName()
         ).toString();
     }
 
@@ -56,8 +56,8 @@ public class SavedQueryService {
         return savedQueries.stream()
                 .map(savedQuery -> new SavedQueryDTO(
                         savedQuery.getQueryName(),
-                        savedQuery.getCurrency().getSymbol(),
-                        savedQuery.getIndicator().getName()
+                        savedQuery.getCurrencyEntity().getSymbol(),
+                        savedQuery.getIndicatorEntity().getName()
                 ))
                 .collect(Collectors.toList());
     }
@@ -66,11 +66,11 @@ public class SavedQueryService {
         CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(indicatorName);
 
         // Find the currency by its symbol
-        Currency currency = currencyRepository.findBySymbol(currencySymbol)
+        CurrencyEntity currencyEntity = currencyEntityRepository.findBySymbol(currencySymbol)
                 .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
 
         // Find the indicator by its name
-        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+        IndicatorEntity indicatorEntity = indicatorEntityRepository.findByName(indicatorType.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, exception already handled
 
         // Check if a saved query with the same name already exists for the API key
@@ -82,8 +82,8 @@ public class SavedQueryService {
         SavedQuery savedQuery = new SavedQuery();
         savedQuery.setApiKey(apiKey);
         savedQuery.setQueryName(queryName);
-        savedQuery.setCurrency(currency);
-        savedQuery.setIndicator(indicator);
+        savedQuery.setCurrencyEntity(currencyEntity);
+        savedQuery.setIndicatorEntity(indicatorEntity);
         savedQueryRepository.save(savedQuery);
     }
 
@@ -97,17 +97,17 @@ public class SavedQueryService {
         SavedQuery savedQuery = savedQueryRepository.findByQueryNameAndApiKey(existingQueryName, apiKey)
                 .orElseThrow(() -> new EntityNotFoundException("Saved query not found"));
 
-        Currency currency = currencyRepository.findBySymbol(newCurrency)
+        CurrencyEntity currencyEntity = currencyEntityRepository.findBySymbol(newCurrency)
                 .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
 
         CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(newIndicator);
 
-        Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
+        IndicatorEntity indicatorEntity = indicatorEntityRepository.findByName(indicatorType.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Indicator not found")); // TODO: probably irrelevant, exception is already handled
 
         savedQuery.setQueryName(newQueryName);
-        savedQuery.setCurrency(currency);
-        savedQuery.setIndicator(indicator);
+        savedQuery.setCurrencyEntity(currencyEntity);
+        savedQuery.setIndicatorEntity(indicatorEntity);
 
         savedQueryRepository.save(savedQuery);
     }

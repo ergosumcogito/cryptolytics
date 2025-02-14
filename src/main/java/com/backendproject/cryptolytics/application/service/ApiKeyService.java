@@ -1,7 +1,7 @@
-package com.backendproject.cryptolytics.domain.service;
+package com.backendproject.cryptolytics.application.service;
 
-import com.backendproject.cryptolytics.persistence.entity.ApiKey;
-import com.backendproject.cryptolytics.persistence.repository.ApiKeyRepository;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
+import com.backendproject.cryptolytics.infrastructure.persistence.repository.ApiKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

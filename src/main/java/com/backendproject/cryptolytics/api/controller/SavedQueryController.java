@@ -1,9 +1,9 @@
 package com.backendproject.cryptolytics.api.controller;
 
 import com.backendproject.cryptolytics.api.dto.SavedQueryDTO;
-import com.backendproject.cryptolytics.domain.service.ApiKeyService;
-import com.backendproject.cryptolytics.domain.service.SavedQueryService;
-import com.backendproject.cryptolytics.persistence.entity.*;
+import com.backendproject.cryptolytics.application.service.ApiKeyService;
+import com.backendproject.cryptolytics.application.service.SavedQueryService;
+import com.backendproject.cryptolytics.infrastructure.persistence.entity.ApiKey;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
