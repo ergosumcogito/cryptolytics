@@ -1,14 +1,14 @@
-package com.backendproject.cryptolytics.domain.service;
+package com.backendproject.cryptolytics.application.service;
 
-import com.backendproject.cryptolytics.persistence.entity.Currency;
-import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicator;
-import com.backendproject.cryptolytics.persistence.entity.CurrencyIndicatorValue;
-import com.backendproject.cryptolytics.persistence.entity.Indicator;
-import com.backendproject.cryptolytics.persistence.repository.CurrencyIndicatorRepository;
-import com.backendproject.cryptolytics.persistence.repository.CurrencyIndicatorValueRepository;
-import com.backendproject.cryptolytics.persistence.repository.CurrencyRepository;
-import com.backendproject.cryptolytics.persistence.repository.IndicatorRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.backendproject.cryptolytics.domain.model.Currency;
+import com.backendproject.cryptolytics.domain.model.CurrencyIndicator;
+import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
+import com.backendproject.cryptolytics.domain.model.Indicator;
+import com.backendproject.cryptolytics.domain.port.out.CurrencyIndicatorRepository;
+import com.backendproject.cryptolytics.domain.port.out.CurrencyIndicatorValueRepository;
+import com.backendproject.cryptolytics.domain.port.out.CurrencyRepository;
+import com.backendproject.cryptolytics.domain.port.out.IndicatorRepository;
+import com.backendproject.cryptolytics.infrastructure.exceptions.NotFoundException;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,23 +64,23 @@ public class CryptoQueryService {
     public BigDecimal getIndicatorValue(String currencySymbol, String indicatorName) {
         IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
 
-        // Get currency entity by symbol
+        // Get currency by symbol
         Currency currency = currencyRepository.findBySymbol(currencySymbol)
-                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+                .orElseThrow(() -> new NotFoundException("Currency not found: " + currencySymbol));
 
         // Get Indicator
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, error already handled
+                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, error already handled
 
         // Find the CurrencyIndicator
         CurrencyIndicator currencyIndicator = currencyIndicatorRepository
                 .findByCurrencyAndIndicator(currency, indicator)
-                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
+                .orElseThrow(() -> new NotFoundException("Currency-Indicator pair not found"));
 
         // Get the most recent value for this CurrencyIndicator
         CurrencyIndicatorValue value = currencyIndicatorValueRepository
                 .findTopByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator)
-                .orElseThrow(() -> new EntityNotFoundException("Indicator data not found"));
+                .orElseThrow(() -> new NotFoundException("Indicator data not found"));
 
         return value.getValue();
     }
@@ -102,18 +102,18 @@ public class CryptoQueryService {
     public List<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName, String startDate, String endDate){
         IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
 
-        // Get currency entity by symbol
+        // Get currency by symbol
         Currency currency = currencyRepository.findBySymbol(currencySymbol)
-                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + currencySymbol));
+                .orElseThrow(() -> new NotFoundException("Currency not found: " + currencySymbol));
 
         // Get Indicator
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new EntityNotFoundException("Indicator not found: " + indicatorName));
+                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorName));
 
         // Find the CurrencyIndicator
         CurrencyIndicator currencyIndicator = currencyIndicatorRepository
                 .findByCurrencyAndIndicator(currency, indicator)
-                .orElseThrow(() -> new EntityNotFoundException("Currency-Indicator pair not found"));
+                .orElseThrow(() -> new NotFoundException("Currency-Indicator pair not found"));
 
         // Query the database with startDate and endDate
         LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate) : null;
