@@ -13,7 +13,7 @@ public class HistoryEntryDTO {
     private Map<String, Object> indicators = new HashMap<>();
 
     public HistoryEntryDTO(LocalDateTime timestamp, String indicatorName, BigDecimal indicatorValue) {
-        this.date = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.date = timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.indicators.put(indicatorName, indicatorValue);
     }
 
