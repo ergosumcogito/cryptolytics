@@ -3,6 +3,7 @@ package com.backendproject.cryptolytics.api.controller;
 import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
 import com.backendproject.cryptolytics.api.dto.HistoryEntryDTO;
 import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
+import com.backendproject.cryptolytics.api.dto.IndicatorValueDTO;
 import com.backendproject.cryptolytics.application.service.CryptoQueryService;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
 import com.backendproject.cryptolytics.domain.model.Indicator;
@@ -38,13 +39,14 @@ public class CryptolyticsController {
     }
 
     @GetMapping("/currencies/{currency}/{indicator}")
-    public ResponseEntity<EntityModel<Object>> getIndicatorForCurrency(
+    public ResponseEntity<EntityModel<IndicatorValueDTO>> getIndicatorForCurrency(
             @PathVariable String currency,
             @PathVariable String indicator) {
 
             Object result  = cryptoQueryService.getIndicatorValue(currency, indicator);
 
-            EntityModel<Object> resource = EntityModel.of(result);
+            IndicatorValueDTO dto = new IndicatorValueDTO(currency, indicator, result);
+            EntityModel<IndicatorValueDTO> resource = EntityModel.of(dto);
 
         resource.add(WebMvcLinkBuilder.linkTo(
                         WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
@@ -52,7 +54,7 @@ public class CryptolyticsController {
                 .withSelfRel());
         resource.add(WebMvcLinkBuilder.linkTo(
                         WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
-                                .getIndicatorHistory(currency, indicator, null, null, Pageable.unpaged()))
+                                .getIndicatorHistory(currency, indicator,null,null, Pageable.unpaged()))
                 .withRel("history"));
         resource.add(WebMvcLinkBuilder.linkTo(
                         WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
