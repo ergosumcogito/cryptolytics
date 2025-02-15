@@ -8,6 +8,8 @@ import com.backendproject.cryptolytics.infrastructure.persistence.mapper.Currenc
 import com.backendproject.cryptolytics.infrastructure.persistence.mapper.CurrencyIndicatorValueMapper;
 import com.backendproject.cryptolytics.infrastructure.persistence.repository.CurrencyIndicatorValueEntityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -43,16 +45,16 @@ public class CurrencyIndicatorValueRepositoryAdapter implements CurrencyIndicato
     }
 
     @Override
-    public List<CurrencyIndicatorValue> findByCurrencyIndicatorOrderByTimestampDesc(CurrencyIndicator currencyIndicator) {
+    public Page<CurrencyIndicatorValue> findByCurrencyIndicatorOrderByTimestampDesc(CurrencyIndicator currencyIndicator, Pageable pageable) {
         return currencyIndicatorValueEntityRepository.findByCurrencyIndicatorOrderByTimestampDesc(
-                currencyIndicatorMapper.toEntity(currencyIndicator)
-        ).stream().map(currencyIndicatorValueMapper::toDomain).toList();
+                currencyIndicatorMapper.toEntity(currencyIndicator), pageable
+        ).map(currencyIndicatorValueMapper::toDomain);
     }
 
     @Override
-    public List<CurrencyIndicatorValue> findByCurrencyIndicatorAndTimestampBetween(CurrencyIndicator currencyIndicator, LocalDateTime start, LocalDateTime end) {
+    public Page<CurrencyIndicatorValue> findByCurrencyIndicatorAndTimestampBetween(CurrencyIndicator currencyIndicator, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         return currencyIndicatorValueEntityRepository.findByCurrencyIndicatorAndTimestampBetween(
-                currencyIndicatorMapper.toEntity(currencyIndicator), start, end
-        ).stream().map(currencyIndicatorValueMapper::toDomain).toList();
+                currencyIndicatorMapper.toEntity(currencyIndicator), start, end, pageable
+        ).map(currencyIndicatorValueMapper::toDomain);
     }
 }

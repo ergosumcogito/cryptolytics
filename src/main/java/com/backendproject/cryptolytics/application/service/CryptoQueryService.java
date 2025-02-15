@@ -103,7 +103,8 @@ public class CryptoQueryService {
         return oldestTimestamp.format(formatter);
     }
 
-    public List<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName, String startDate, String endDate){
+    public Page<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName,
+                                                            String startDate, String endDate, Pageable pageable){
         IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
 
         // Get currency by symbol
@@ -125,10 +126,10 @@ public class CryptoQueryService {
 
         if (start != null && end != null) {
             return currencyIndicatorValueRepository
-                    .findByCurrencyIndicatorAndTimestampBetween(currencyIndicator, start, end);
+                    .findByCurrencyIndicatorAndTimestampBetween(currencyIndicator, start, end, pageable);
         } else {
             return currencyIndicatorValueRepository
-                    .findByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator);
+                    .findByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator, pageable);
         }
     }
 }
