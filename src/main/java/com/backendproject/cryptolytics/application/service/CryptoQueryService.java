@@ -1,5 +1,6 @@
 package com.backendproject.cryptolytics.application.service;
 
+import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
 import com.backendproject.cryptolytics.domain.model.Currency;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicator;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
@@ -11,6 +12,8 @@ import com.backendproject.cryptolytics.domain.port.out.IndicatorRepository;
 import com.backendproject.cryptolytics.infrastructure.exceptions.NotFoundException;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -70,7 +73,7 @@ public class CryptoQueryService {
 
         // Get Indicator
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, error already handled
+                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName()));
 
         // Find the CurrencyIndicator
         CurrencyIndicator currencyIndicator = currencyIndicatorRepository
@@ -85,8 +88,9 @@ public class CryptoQueryService {
         return value.getValue();
     }
 
-    public List<Currency> getAllCurrencies(){
-        return currencyRepository.findAll();
+    public Page<CurrencyDTO> getAllCurrencies(Pageable pageable){
+        return currencyRepository.findAll(pageable)
+                .map(currency -> new CurrencyDTO(currency.getSymbol(), currency.getName()));
     }
 
     public List<Indicator> getAllIndicators(){
@@ -99,7 +103,8 @@ public class CryptoQueryService {
         return oldestTimestamp.format(formatter);
     }
 
-    public List<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName, String startDate, String endDate){
+    public Page<CurrencyIndicatorValue> getIndicatorHistory(String currencySymbol, String indicatorName,
+                                                            String startDate, String endDate, Pageable pageable){
         IndicatorType indicatorType = IndicatorType.fromString(indicatorName);
 
         // Get currency by symbol
@@ -121,10 +126,10 @@ public class CryptoQueryService {
 
         if (start != null && end != null) {
             return currencyIndicatorValueRepository
-                    .findByCurrencyIndicatorAndTimestampBetween(currencyIndicator, start, end);
+                    .findByCurrencyIndicatorAndTimestampBetween(currencyIndicator, start, end, pageable);
         } else {
             return currencyIndicatorValueRepository
-                    .findByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator);
+                    .findByCurrencyIndicatorOrderByTimestampDesc(currencyIndicator, pageable);
         }
     }
 }
