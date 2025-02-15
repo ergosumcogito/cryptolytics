@@ -1,9 +1,6 @@
 package com.backendproject.cryptolytics.api.controller;
 
-import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
-import com.backendproject.cryptolytics.api.dto.HistoryEntryDTO;
-import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
-import com.backendproject.cryptolytics.api.dto.IndicatorValueDTO;
+import com.backendproject.cryptolytics.api.dto.*;
 import com.backendproject.cryptolytics.application.service.CryptoQueryService;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
 import com.backendproject.cryptolytics.domain.model.Indicator;
@@ -38,6 +35,22 @@ public class CryptolyticsController {
         this.historyPagedResourcesAssembler = historyPagedResourcesAssembler;
     }
 
+    // Main Entry Endpoint
+    @GetMapping
+    public ResponseEntity<EntityModel<MainEntryPointDTO>> getMainEntryPoint() {
+        MainEntryPointDTO dto = new MainEntryPointDTO();
+        dto.setMessage("Welcome to Cryptolytics API");
+
+        // Adding links
+        EntityModel<MainEntryPointDTO> resource = EntityModel.of(dto);
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class).getMainEntryPoint()).withSelfRel());
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class).getCurrenciesList(Pageable.unpaged())).withRel("currencies"));
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class).getIndicatorsList()).withRel("indicators"));
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class).getOldestUpdated()).withRel("last-updated"));
+
+        return ResponseEntity.ok(resource);
+    }
+
     @GetMapping("/currencies/{currency}/{indicator}")
     public ResponseEntity<EntityModel<IndicatorValueDTO>> getIndicatorForCurrency(
             @PathVariable String currency,
@@ -54,7 +67,7 @@ public class CryptolyticsController {
                 .withSelfRel());
         resource.add(WebMvcLinkBuilder.linkTo(
                         WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
-                                .getIndicatorHistory(currency, indicator,null,null, Pageable.unpaged()))
+                                .getIndicatorHistory(currency, indicator, Pageable.unpaged()))
                 .withRel("history"));
         resource.add(WebMvcLinkBuilder.linkTo(
                         WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
@@ -84,6 +97,10 @@ public class CryptolyticsController {
                     return entityModel;
                 }
         );
+        pagedModel.add(WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
+                                .getMainEntryPoint())  // Link to the main dispatcher
+                .withRel("previous"));
 
         return ResponseEntity.ok(pagedModel);
     }
@@ -104,17 +121,29 @@ public class CryptolyticsController {
                 WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
                         .getIndicatorsList()).withSelfRel());
 
+        collectionModel.add(WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
+                                .getMainEntryPoint())  // Link to the main dispatcher
+                .withRel("previous"));
+
         return ResponseEntity.ok(collectionModel);
     }
 
     @GetMapping("/last-updated")
-    public ResponseEntity<EntityModel<String>> getOldestUpdated() {
+    public ResponseEntity<EntityModel<LastUpdatedDTO>> getOldestUpdated() {
         String formattedTimestamp = cryptoQueryService.getFormattedOldestUpdateTimestamp();
 
-        EntityModel<String> resource = EntityModel.of(formattedTimestamp);
+        LastUpdatedDTO dto = new LastUpdatedDTO(formattedTimestamp);
+
+        EntityModel<LastUpdatedDTO> resource = EntityModel.of(dto);
         resource.add(WebMvcLinkBuilder.linkTo(
                 WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
                         .getOldestUpdated()).withSelfRel());
+
+        resource.add(WebMvcLinkBuilder.linkTo(
+                        WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
+                                .getCurrenciesList(Pageable.unpaged()))
+                .withRel("previous"));
 
         return ResponseEntity.ok(resource);
     }
@@ -123,18 +152,30 @@ public class CryptolyticsController {
     public ResponseEntity<PagedModel<EntityModel<HistoryEntryDTO>>> getIndicatorHistory(
             @PathVariable String currency,
             @PathVariable String indicator,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        Page<CurrencyIndicatorValue> history = cryptoQueryService.getIndicatorHistory(currency, indicator, null, null, pageable);
+        Page<HistoryEntryDTO> historyDTOPage = history.map(entry -> new HistoryEntryDTO(entry.getTimestamp(), indicator.toLowerCase(), entry.getValue()));
+        PagedModel<EntityModel<HistoryEntryDTO>> pagedModel = historyPagedResourcesAssembler.toModel(
+                historyDTOPage,
+                historyDTO -> EntityModel.of(historyDTO)
+        );
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    @GetMapping("/currencies/{currency}/{indicator}/history/{startDate}/{endDate}")
+    public ResponseEntity<PagedModel<EntityModel<HistoryEntryDTO>>> getIndicatorHistoryWithFilters(
+            @PathVariable String currency,
+            @PathVariable String indicator,
+            @PathVariable String startDate,
+            @PathVariable String endDate,
             @PageableDefault(size = 5) Pageable pageable) {
 
         Page<CurrencyIndicatorValue> history = cryptoQueryService.getIndicatorHistory(currency, indicator, startDate, endDate, pageable);
         Page<HistoryEntryDTO> historyDTOPage = history.map(entry -> new HistoryEntryDTO(entry.getTimestamp(), indicator.toLowerCase(), entry.getValue()));
         PagedModel<EntityModel<HistoryEntryDTO>> pagedModel = historyPagedResourcesAssembler.toModel(
                 historyDTOPage,
-                historyDTO -> EntityModel.of(historyDTO,
-                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
-                                        .getIndicatorHistory(currency, indicator, startDate, endDate, Pageable.unpaged()))
-                                .withSelfRel())
+                historyDTO -> EntityModel.of(historyDTO)
         );
         return ResponseEntity.ok(pagedModel);
     }
