@@ -1,5 +1,6 @@
 package com.backendproject.cryptolytics.application.service;
 
+import com.backendproject.cryptolytics.api.dto.CurrencyDTO;
 import com.backendproject.cryptolytics.domain.model.Currency;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicator;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
@@ -11,6 +12,8 @@ import com.backendproject.cryptolytics.domain.port.out.IndicatorRepository;
 import com.backendproject.cryptolytics.infrastructure.exceptions.NotFoundException;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -85,8 +88,9 @@ public class CryptoQueryService {
         return value.getValue();
     }
 
-    public List<Currency> getAllCurrencies(){
-        return currencyRepository.findAll();
+    public Page<CurrencyDTO> getAllCurrencies(Pageable pageable){
+        return currencyRepository.findAll(pageable)
+                .map(currency -> new CurrencyDTO(currency.getSymbol(), currency.getName()));
     }
 
     public List<Indicator> getAllIndicators(){

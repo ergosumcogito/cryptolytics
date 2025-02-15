@@ -6,6 +6,12 @@ import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.application.service.CryptoQueryService;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +23,15 @@ import java.util.Map;
 public class CryptolyticsController {
 
     private final CryptoQueryService cryptoQueryService;
+    private final PagedResourcesAssembler<CurrencyDTO> pagedResourcesAssembler;
 
     @Autowired
-    public CryptolyticsController(CryptoQueryService cryptoQueryService) {
+    public CryptolyticsController(CryptoQueryService cryptoQueryService,
+                                  @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") PagedResourcesAssembler<?> pagedResourcesAssembler) {
         this.cryptoQueryService = cryptoQueryService;
+
+        PagedResourcesAssembler<CurrencyDTO> assembler = (PagedResourcesAssembler<CurrencyDTO>) pagedResourcesAssembler;
+        this.pagedResourcesAssembler = assembler;
     }
 
     @GetMapping("/currencies/{currency}/{indicator}")
@@ -33,11 +44,12 @@ public class CryptolyticsController {
     }
 
     @GetMapping("/currencies")
-    public ResponseEntity<List<CurrencyDTO>> getCurrenciesList(){
-        List<CurrencyDTO> currencyDTOs  = cryptoQueryService.getAllCurrencies().stream()
-                .map(currency -> new CurrencyDTO(currency.getSymbol(), currency.getName()))
-                .toList();
-        return ResponseEntity.ok(currencyDTOs);
+    public ResponseEntity<PagedModel<EntityModel<CurrencyDTO>>> getCurrenciesList(
+           @PageableDefault(size = 10) Pageable pageable){
+        Page<CurrencyDTO> currencyPage  = cryptoQueryService.getAllCurrencies(pageable);
+        PagedModel<EntityModel<CurrencyDTO>> pagedModel = pagedResourcesAssembler.toModel(
+                currencyPage, EntityModel::of);
+        return ResponseEntity.ok(pagedModel);
     }
 
     @GetMapping("/indicators")
