@@ -5,6 +5,7 @@ import com.backendproject.cryptolytics.api.dto.HistoryEntryDTO;
 import com.backendproject.cryptolytics.api.dto.IndicatorDTO;
 import com.backendproject.cryptolytics.application.service.CryptoQueryService;
 import com.backendproject.cryptolytics.domain.model.CurrencyIndicatorValue;
+import com.backendproject.cryptolytics.domain.model.Indicator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,14 +63,26 @@ public class CryptolyticsController {
     }
 
     @GetMapping("/currencies")
-    public ResponseEntity<PagedModel<EntityModel<CurrencyDTO>>> getCurrenciesList(Pageable pageable){
-        Page<CurrencyDTO> currencyPage  = cryptoQueryService.getAllCurrencies(pageable);
+    public ResponseEntity<PagedModel<EntityModel<CurrencyDTO>>> getCurrenciesList(Pageable pageable) {
+        Page<CurrencyDTO> currencyPage = cryptoQueryService.getAllCurrencies(pageable);
+        List<Indicator> indicators = cryptoQueryService.getAllIndicators();
+
         PagedModel<EntityModel<CurrencyDTO>> pagedModel = pagedResourcesAssembler.toModel(
-                currencyPage, currencyDTO -> EntityModel.of(currencyDTO,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
-                        .getIndicatorForCurrency(currencyDTO.getSymbol(), "price"))
-                        .withRel("price"))
+                currencyPage,
+                currencyDTO -> {
+                    EntityModel<CurrencyDTO> entityModel = EntityModel.of(currencyDTO);
+
+                    // Dynamically generate a hyperlink for each indicator
+                    for (Indicator indicator : indicators) {
+                        entityModel.add(WebMvcLinkBuilder.linkTo(
+                                        WebMvcLinkBuilder.methodOn(CryptolyticsController.class)
+                                                .getIndicatorForCurrency(currencyDTO.getSymbol(), indicator.getName()))
+                                .withRel(indicator.getName()));
+                    }
+                    return entityModel;
+                }
         );
+
         return ResponseEntity.ok(pagedModel);
     }
 
