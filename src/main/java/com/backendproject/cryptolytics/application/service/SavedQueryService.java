@@ -70,7 +70,7 @@ public class SavedQueryService {
 
         // Find the indicator by its name
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName())); // TODO: probably irrelevant, exception already handled
+                .orElseThrow(() -> new NotFoundException("Indicator not found: " + indicatorType.getName()));
 
         // Check if a saved query with the same name already exists for the API key
         if (savedQueryRepository.existsByApiKeyAndQueryName(apiKey, queryName)) {
@@ -98,7 +98,7 @@ public class SavedQueryService {
         CryptoQueryService.IndicatorType indicatorType = CryptoQueryService.IndicatorType.fromString(newIndicator);
 
         Indicator indicator = indicatorRepository.findByName(indicatorType.getName())
-                .orElseThrow(() -> new NotFoundException("Indicator not found")); // TODO: probably irrelevant, exception is already handled
+                .orElseThrow(() -> new NotFoundException("Indicator not found"));
 
         savedQuery.setQueryName(newQueryName);
         savedQuery.setCurrency(currency);
